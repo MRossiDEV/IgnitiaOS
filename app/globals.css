@@ -95,4 +95,228 @@
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2;
   }
+
+  .admin-theme {
+    --ign-bg-base: #070b12;
+    --ign-bg-shell: #050a12;
+    --ign-bg-elevated: rgba(255, 255, 255, 0.04);
+    --ign-bg-hover: rgba(255, 255, 255, 0.08);
+    --ign-border: rgba(118, 160, 255, 0.22);
+    --ign-border-strong: rgba(118, 160, 255, 0.35);
+    --ign-text: #eef3ff;
+    --ign-text-muted: #8f9db5;
+    --ign-text-dim: #71809a;
+    --ign-accent: #6ee7ff;
+    --ign-accent-strong: #58d6ff;
+    --ign-accent-contrast: #061623;
+    --ign-gradient-top: radial-gradient(circle at top right, rgba(88, 214, 255, 0.18), transparent 40%);
+    --ign-gradient-bottom: radial-gradient(circle at bottom left, rgba(45, 107, 255, 0.16), transparent 35%);
+    color: var(--ign-text);
+  }
+
+  .admin-theme .bg-black,
+  .admin-theme .bg-\[\#050505\],
+  .admin-theme .bg-\[\#070B12\],
+  .admin-theme .bg-\[\#080c16\],
+  .admin-theme .bg-\[\#0b1220\],
+  .admin-theme .bg-\[\#0a101d\] {
+    background-color: var(--ign-bg-shell) !important;
+  }
+
+  .admin-theme .from-black {
+    --tw-gradient-from: var(--ign-bg-shell) var(--tw-gradient-from-position) !important;
+    --tw-gradient-to: rgb(5 10 18 / 0) var(--tw-gradient-to-position) !important;
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+  }
+
+  .admin-theme .to-\[\#050505\] {
+    --tw-gradient-to: var(--ign-bg-shell) var(--tw-gradient-to-position) !important;
+  }
+
+  .admin-theme .bg-white\/5 {
+    background-color: var(--ign-bg-elevated) !important;
+  }
+
+  .admin-theme .bg-white\/10,
+  .admin-theme .hover\:bg-white\/10:hover {
+    background-color: var(--ign-bg-hover) !important;
+  }
+
+  .admin-theme .border-white\/10 {
+    border-color: var(--ign-border) !important;
+  }
+
+  .admin-theme .border-white\/20,
+  .admin-theme .hover\:border-white\/20:hover {
+    border-color: var(--ign-border-strong) !important;
+  }
+
+  .admin-theme .text-zinc-500 {
+    color: var(--ign-text-dim) !important;
+  }
+
+  .admin-theme .text-zinc-400 {
+    color: var(--ign-text-muted) !important;
+  }
+
+  .admin-theme .text-cyan-400,
+  .admin-theme .text-cyan-300,
+  .admin-theme .text-cyan-200 {
+    color: var(--ign-accent) !important;
+  }
+
+  .admin-theme .bg-cyan-500,
+  .admin-theme .hover\:bg-cyan-400:hover,
+  .admin-theme .hover\:bg-cyan-500:hover {
+    background-color: var(--ign-accent-strong) !important;
+  }
+
+  .admin-theme .text-black {
+    color: var(--ign-accent-contrast) !important;
+  }
+
+  .admin-theme .border-cyan-500,
+  .admin-theme .border-cyan-500\/20,
+  .admin-theme .border-cyan-500\/30,
+  .admin-theme .hover\:border-cyan-500\/30:hover {
+    border-color: rgba(110, 231, 255, 0.38) !important;
+  }
+
+  .admin-theme .bg-cyan-500\/10,
+  .admin-theme .hover\:bg-cyan-500\/10:hover {
+    background-color: rgba(110, 231, 255, 0.12) !important;
+  }
+
+  .admin-theme .bg-purple-500 {
+    background-color: var(--ign-accent-strong) !important;
+  }
+
+  .admin-theme .bg-\[radial-gradient\(circle_at_top_right\,\#2D6BFF22\,transparent_40\%\)\] {
+    background-image: var(--ign-gradient-top) !important;
+  }
+
+  .admin-theme .bg-\[radial-gradient\(circle_at_bottom_left\,\#00D5FF11\,transparent_35\%\)\] {
+    background-image: var(--ign-gradient-bottom) !important;
+  }
+
+  .admin-theme .p-6 {
+    padding: 1rem !important;
+  }
+
+  .admin-theme .p-10 {
+    padding: 1.25rem !important;
+  }
+
+  .admin-theme .p-8 {
+    padding: 1rem !important;
+  }
+
+  .admin-theme .p-5 {
+    padding: 0.875rem !important;
+  }
+
+  .admin-theme .p-4 {
+    padding: 0.75rem !important;
+  }
+
+  .admin-theme .px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .admin-theme .px-8 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+
+  .admin-theme .py-8 {
+    padding-top: 0.875rem !important;
+    padding-bottom: 0.875rem !important;
+  }
+
+  .admin-theme .py-4 {
+    padding-top: 0.625rem !important;
+    padding-bottom: 0.625rem !important;
+  }
+
+  .admin-theme .py-3 {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+
+  .admin-theme .gap-6 {
+    gap: 1rem !important;
+  }
+
+  .admin-theme .gap-8 {
+    gap: 1rem !important;
+  }
+
+  .admin-theme .gap-5 {
+    gap: 0.875rem !important;
+  }
+
+  .admin-theme .gap-4 {
+    gap: 0.75rem !important;
+  }
+
+  .admin-theme .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse)) !important;
+  }
+
+  .admin-theme .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(1rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(1rem * var(--tw-space-y-reverse)) !important;
+  }
+
+  .admin-theme .space-y-5 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.875rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(0.875rem * var(--tw-space-y-reverse)) !important;
+  }
+
+  .admin-theme .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.75rem * calc(1 - var(--tw-space-y-reverse))) !important;
+    margin-bottom: calc(0.75rem * var(--tw-space-y-reverse)) !important;
+  }
+
+  .admin-theme .rounded-3xl {
+    border-radius: 1rem !important;
+  }
+
+  .admin-theme .rounded-2xl {
+    border-radius: 0.875rem !important;
+  }
+
+  .admin-theme .h-12 {
+    height: 2.5rem !important;
+  }
+
+  .admin-theme .h-10 {
+    height: 2.25rem !important;
+  }
+
+  .admin-theme .text-3xl {
+    font-size: 1.625rem !important;
+    line-height: 2rem !important;
+  }
+
+  .admin-theme .text-5xl {
+    font-size: 2rem !important;
+    line-height: 2.25rem !important;
+  }
+
+  .admin-theme .text-4xl {
+    font-size: 1.75rem !important;
+    line-height: 2.1rem !important;
+  }
+
+  .admin-theme .text-2xl {
+    font-size: 1.35rem !important;
+    line-height: 1.85rem !important;
+  }
 }

@@ -125,14 +125,41 @@ export async function signOut() {
 export async function getCurrentUser(): Promise<AuthUser | null> {
   const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (error || !user) return null
+  if (error || !user) {
+    console.log('No authenticated user found')
+    return null
+  }
 
-  // Fetch user profile
-  const { data: profile } = await supabase
+  console.log('Authenticated user:', user.id, user.email)
+
+  // Fetch user profile - handle errors gracefully
+  const { data: profile, error: profileError } = await supabase
     .from('user_profiles')
     .select('*')
     .eq('id', user.id)
-    .single()
+    .maybeSingle() // Use maybeSingle() instead of single() to avoid errors when no row exists
+
+  if (profileError) {
+    console.error('Error fetching user profile:', {
+      message: profileError.message,
+      details: profileError.details,
+      hint: profileError.hint,
+      code: profileError.code
+    })
+
+    // Return user without profile if there's an error
+    return {
+      ...user,
+      profile: undefined,
+    }
+  }
+
+  if (!profile) {
+    console.warn('No profile found for user:', user.id)
+    console.warn('You may need to create a profile in the database')
+  } else {
+    console.log('Profile loaded:', profile.role, profile.email)
+  }
 
   return {
     ...user,

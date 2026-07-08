@@ -1,0 +1,6 @@
+export const WEBSITE_INTELLIGENCE_USER_AGENT =
+  "IgnitiaWebsiteIntelligenceBot/1.0"
+
+export const WEBSITE_INTELLIGENCE_TIMEOUT_MS = 20_000
+
+export const WEBSITE_INTELLIGENCE_MAX_BYTES = 2_000_000

@@ -1,10 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Save, RotateCcw } from "lucide-react"
+import { Save, RotateCcw, Settings as SettingsIcon } from "lucide-react"
+
 import { GeneralSettings } from "@/components/settings/general-settings"
 import { AITemplatesSettings } from "@/components/settings/ai-templates-settings"
 import { ReportSettings } from "@/components/settings/report-settings"
@@ -15,191 +21,205 @@ import { IndustrySettings } from "@/components/settings/industry-settings"
 import { IntegrationSettings } from "@/components/settings/integration-settings"
 import { SystemSettings } from "@/components/settings/system-settings"
 
+const tabs = [
+  { id: "general", label: "General" },
+  { id: "ai", label: "AI & Templates" },
+  { id: "reports", label: "Reports" },
+  { id: "funnels", label: "Funnels" },
+  { id: "leads", label: "Leads & Deals" },
+  { id: "payments", label: "Payments" },
+  { id: "industries", label: "Industries" },
+  { id: "integrations", label: "Integrations" },
+  { id: "system", label: "System" },
+]
+
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("general")
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
 
   const handleSave = () => {
-    // Save logic will be implemented per tab
     console.log("Saving settings...")
     setHasUnsavedChanges(false)
   }
 
   const handleReset = () => {
-    if (confirm("Are you sure you want to discard all unsaved changes?")) {
-      setHasUnsavedChanges(false)
-      // Reset logic
-    }
+    const ok = confirm("Discard all unsaved changes?")
+    if (!ok) return
+    setHasUnsavedChanges(false)
   }
 
   return (
-    <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex h-16 items-center justify-between px-6">
+    <div className="p-6 space-y-6 text-white">
+
+      {/* HEADER */}
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+
+        <div className="flex items-start gap-3">
+          <div className="p-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20">
+            <SettingsIcon size={18} className="text-cyan-400" />
+          </div>
+
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-            <p className="text-sm text-muted-foreground">
-              Configure your platform, AI templates, reports, and integrations
+            <h1 className="text-3xl font-bold">Settings</h1>
+            <p className="text-sm text-zinc-500">
+              Configure automation, AI behavior, funnels and system logic
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            {hasUnsavedChanges && (
-              <Button variant="outline" onClick={handleReset}>
-                <RotateCcw className="mr-2 h-4 w-4" />
-                Reset
-              </Button>
-            )}
-            <Button onClick={handleSave} disabled={!hasUnsavedChanges}>
-              <Save className="mr-2 h-4 w-4" />
-              Save Changes
+        </div>
+
+        <div className="flex items-center gap-2">
+          {hasUnsavedChanges && (
+            <Button
+              variant="outline"
+              onClick={handleReset}
+              className="border-white/10 bg-white/5 hover:bg-white/10 text-white"
+            >
+              <RotateCcw className="mr-2 h-4 w-4" />
+              Reset
             </Button>
-          </div>
+          )}
+
+          <Button
+            onClick={handleSave}
+            disabled={!hasUnsavedChanges}
+            className="bg-cyan-500 text-black hover:bg-cyan-400 disabled:opacity-40"
+          >
+            <Save className="mr-2 h-4 w-4" />
+            Save Changes
+          </Button>
         </div>
       </div>
 
-      {/* Settings Tabs */}
-      <div className="flex-1 overflow-auto p-6">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-9 lg:w-auto lg:inline-grid">
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="ai">AI & Templates</TabsTrigger>
-            <TabsTrigger value="reports">Reports</TabsTrigger>
-            <TabsTrigger value="funnels">Funnels</TabsTrigger>
-            <TabsTrigger value="leads">Leads & Deals</TabsTrigger>
-            <TabsTrigger value="payments">Payments</TabsTrigger>
-            <TabsTrigger value="industries">Industries</TabsTrigger>
-            <TabsTrigger value="integrations">Integrations</TabsTrigger>
-            <TabsTrigger value="system">System</TabsTrigger>
+      {/* TABS WRAPPER */}
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+
+        {/* SCROLLABLE TAB BAR */}
+        <div className="overflow-x-auto">
+          <TabsList className="flex w-max gap-2 bg-white/5 border border-white/10 p-1 rounded-xl">
+
+            {tabs.map((t) => (
+              <TabsTrigger
+                key={t.id}
+                value={t.id}
+                className="px-4 py-2 rounded-lg text-sm data-[state=active]:bg-cyan-500 data-[state=active]:text-black"
+              >
+                {t.label}
+              </TabsTrigger>
+            ))}
+
           </TabsList>
+        </div>
 
-          <TabsContent value="general" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>General Platform Settings</CardTitle>
-                <CardDescription>
-                  Configure core parameters that affect all automation and reporting
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <GeneralSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+        {/* CONTENT PANELS */}
+        <div className="space-y-6">
+
+          <TabsContent value="general">
+            <SettingsCard
+              title="General Platform Settings"
+              desc="Core configuration for system behavior and global defaults"
+            >
+              <GeneralSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="ai" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>AI Configuration & Templates</CardTitle>
-                <CardDescription>
-                  Control AI prompt behavior and content generation to automate reports
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <AITemplatesSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="ai">
+            <SettingsCard
+              title="AI Configuration"
+              desc="Control prompts, templates, and automation intelligence"
+            >
+              <AITemplatesSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="reports" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Report Settings</CardTitle>
-                <CardDescription>
-                  Configure free vs. paid report generation and automation
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ReportSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="reports">
+            <SettingsCard
+              title="Report Engine"
+              desc="Define generation rules, pricing logic and automation layers"
+            >
+              <ReportSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="funnels" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Funnel & Landing Page Settings</CardTitle>
-                <CardDescription>
-                  Configure and automate the funnel for each deal
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FunnelSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="funnels">
+            <SettingsCard
+              title="Funnels & Landing Systems"
+              desc="Control acquisition flows and conversion structures"
+            >
+              <FunnelSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="leads" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Leads & Deals Automation</CardTitle>
-                <CardDescription>
-                  Control automatic lead creation, deal assignment, and AI insights
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <LeadsDealsSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="leads">
+            <SettingsCard
+              title="Leads & Deal Logic"
+              desc="Automation rules for lead creation and assignment"
+            >
+              <LeadsDealsSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="payments" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Payment & Pricing Settings</CardTitle>
-                <CardDescription>
-                  Configure payments for paid reports and deals
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <PaymentSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="payments">
+            <SettingsCard
+              title="Monetization Settings"
+              desc="Pricing, billing rules and payment integrations"
+            >
+              <PaymentSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="industries" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Industry Settings</CardTitle>
-                <CardDescription>
-                  Tailor AI reports to each vertical for more accuracy
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <IndustrySettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="industries">
+            <SettingsCard
+              title="Industry Intelligence"
+              desc="Adjust AI outputs per vertical for higher accuracy"
+            >
+              <IndustrySettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="integrations" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>Integration Settings</CardTitle>
-                <CardDescription>
-                  Connect external services and APIs
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <IntegrationSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="integrations">
+            <SettingsCard
+              title="External Integrations"
+              desc="APIs, webhooks and third-party system connections"
+            >
+              <IntegrationSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
 
-          <TabsContent value="system" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>System Settings</CardTitle>
-                <CardDescription>
-                  Configure logging, backups, and system alerts
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <SystemSettings onChanged={() => setHasUnsavedChanges(true)} />
-              </CardContent>
-            </Card>
+          <TabsContent value="system">
+            <SettingsCard
+              title="System & Infrastructure"
+              desc="Logs, backups, alerts and performance configuration"
+            >
+              <SystemSettings onChanged={() => setHasUnsavedChanges(true)} />
+            </SettingsCard>
           </TabsContent>
-        </Tabs>
-      </div>
+
+        </div>
+      </Tabs>
     </div>
+  )
+}
+
+/* ---------------- UI WRAPPER ---------------- */
+
+function SettingsCard({
+  title,
+  desc,
+  children,
+}: {
+  title: string
+  desc: string
+  children: React.ReactNode
+}) {
+  return (
+    <Card className="bg-white/5 border border-white/10 text-white">
+      <CardHeader>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription className="text-zinc-500">
+          {desc}
+        </CardDescription>
+      </CardHeader>
+      <CardContent>{children}</CardContent>
+    </Card>
   )
 }

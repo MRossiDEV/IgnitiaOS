@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
@@ -12,9 +12,22 @@ import { signInWithEmail, signInWithGoogle } from '@/lib/auth/supabase-auth'
 import { useAuth } from '@/hooks/use-auth'
 import { Loader2, Mail, Lock, AlertCircle } from 'lucide-react'
 
-export default function LoginPage() {
-  const router = useRouter()
+// Component that uses searchParams - must be wrapped in Suspense
+function SearchParamsMessage() {
   const searchParams = useSearchParams()
+  const message = searchParams.get('message')
+
+  if (!message) return null
+
+  return (
+    <Alert>
+      <AlertDescription>{message}</AlertDescription>
+    </Alert>
+  )
+}
+
+function LoginForm() {
+  const router = useRouter()
   const { user, loading: authLoading } = useAuth()
   
   const [email, setEmail] = useState('')
@@ -105,11 +118,9 @@ export default function LoginPage() {
             </Alert>
           )}
 
-          {searchParams.get('message') && (
-            <Alert>
-              <AlertDescription>{searchParams.get('message')}</AlertDescription>
-            </Alert>
-          )}
+          <Suspense fallback={null}>
+            <SearchParamsMessage />
+          </Suspense>
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
@@ -214,6 +225,18 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   )
 }
 

@@ -16,9 +16,8 @@ export interface Organization {
   id: string
   name: string
   slug: string
-  industry?: string
-  website?: string
-  logo_url?: string
+  plan: 'free' | 'starter' | 'professional' | 'enterprise'
+  status: 'active' | 'inactive' | 'suspended'
   settings?: Record<string, any>
   created_at: string
   updated_at: string
@@ -40,43 +39,103 @@ export interface UserProfile {
 export interface Lead {
   id: string
   organization_id: string
+  partner_id?: string
+  deal_id?: string
+
+  // Lead identity
+  name?: string
   email: string
-  full_name?: string
-  company?: string
   phone?: string
-  industry?: string
+  company?: string
   website?: string
+  industry?: string
+  message?: string
+
+  // Tracking
   status: 'new' | 'contacted' | 'qualified' | 'converted' | 'lost'
-  source?: string
+  source: 'audit' | 'manual' | 'referral' | 'campaign'
+  priority?: 'hot' | 'warm' | 'cold'
+
+  // UTM tracking
+  utm_source?: string
+  utm_medium?: string
+  utm_campaign?: string
+
+  // Revenue tracking
+  estimated_value?: number
+  actual_value?: number
+
+  // Notes and metadata
+  notes?: string
   metadata?: Record<string, any>
+
+  // Timestamps
   created_at: string
   updated_at: string
+  converted_at?: string
+  last_contacted_at?: string
+  next_follow_up_at?: string
+
+  assigned_to?: string
 }
 
 export interface Partner {
   id: string
   organization_id: string
+
+  // Partner identity
   name: string
+  company_name?: string
   email: string
-  company?: string
-  status: 'active' | 'inactive' | 'pending'
-  commission_rate?: number
-  total_revenue?: number
+  phone?: string
+  website?: string
+
+  // Business info
+  industry?: string
+  country?: string
+  city?: string
+
+  // Status and tracking
+  status: 'active' | 'inactive' | 'paused'
+
+  // Notes and metadata
+  notes?: string
+  metadata?: Record<string, any>
+
+  // Timestamps
   created_at: string
   updated_at: string
 }
 
 export interface Deal {
   id: string
-  organization_id: string
   partner_id?: string
-  lead_id?: string
-  title: string
-  amount: number
-  currency: string
-  status: 'draft' | 'pending' | 'active' | 'completed' | 'cancelled'
-  close_date?: string
+  organization_id: string
+
+  // Deal details
+  name: string
+  description?: string
+
+  // Commission structure
+  commission_type: 'percentage' | 'fixed'
+  commission_value: number
+  price?: number
+
+  // Payout and tracking
+  payout_trigger: 'lead' | 'sale'
+  redemptions?: number
+  max_redemptions?: number
+
+  // Status and dates
+  status: 'active' | 'paused' | 'expired'
+  start_date?: string
+  end_date?: string
+
+  // Notes and metadata
+  notes?: string
   metadata?: Record<string, any>
+
+  // Timestamps
   created_at: string
   updated_at: string
 }

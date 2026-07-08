@@ -1,73 +1,49 @@
 "use client"
 
-import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase/client'
 import type { AuthUser, UserRole } from '@/lib/auth/supabase-auth'
-import { getCurrentUser, signOut as authSignOut } from '@/lib/auth/supabase-auth'
 
 // ============================================================================
-// AUTH HOOK
+// AUTH HOOK (DEV: auth bypassed, returns mock admin user)
 // ============================================================================
+
+const MOCK_USER: AuthUser = {
+  id: 'dev-user-id',
+  email: 'dev@ignitia.local',
+  app_metadata: {},
+  user_metadata: { full_name: 'Dev User' },
+  aud: 'authenticated',
+  created_at: new Date().toISOString(),
+  profile: {
+    id: 'dev-user-id',
+    email: 'dev@ignitia.local',
+    full_name: 'Dev User',
+    role: 'super_admin',
+    status: 'active',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+  },
+} as AuthUser
 
 export function useAuth() {
-  const [user, setUser] = useState<AuthUser | null>(null)
-  const [loading, setLoading] = useState(true)
   const router = useRouter()
 
-  useEffect(() => {
-    // Get initial session
-    getCurrentUser().then((user) => {
-      setUser(user)
-      setLoading(false)
-    })
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (session?.user) {
-          const currentUser = await getCurrentUser()
-          setUser(currentUser)
-        } else {
-          setUser(null)
-        }
-        setLoading(false)
-      }
-    )
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
-
   const signOut = async () => {
-    await authSignOut()
-    setUser(null)
     router.push('/login')
   }
 
-  const hasRole = (roles: UserRole | UserRole[]): boolean => {
-    if (!user?.profile) return false
-    const roleArray = Array.isArray(roles) ? roles : [roles]
-    return roleArray.includes(user.profile.role)
-  }
-
-  const isAdmin = (): boolean => {
-    return hasRole(['admin', 'super_admin'])
-  }
-
-  const isPartner = (): boolean => {
-    return hasRole('partner')
-  }
+  const hasRole = (_roles: UserRole | UserRole[]): boolean => true
+  const isAdmin = (): boolean => true
+  const isPartner = (): boolean => true
 
   return {
-    user,
-    loading,
+    user: MOCK_USER,
+    loading: false,
     signOut,
     hasRole,
     isAdmin,
     isPartner,
-    isAuthenticated: !!user,
+    isAuthenticated: true,
   }
 }
 

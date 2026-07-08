@@ -1,78 +1,217 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { reports } from "@/lib/mock/reports"
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { FileText, Plus, Search, Loader2, ArrowUpRight } from "lucide-react";
+
+type ReportRow = {
+  id?: string;
+  report_slug?: string;
+  business_name?: string;
+  industry?: string;
+  report_code?: string;
+  overall_score?: number;
+  score?: number;
+  estimated_monthly_revenue?: number;
+  estimatedImpact?: number;
+  status?: string;
+  created_at?: string;
+  audit_date?: string;
+};
+
+const statusStyles: Record<string, string> = {
+  ready: "border-emerald-500/20 bg-emerald-500/10 text-emerald-300",
+  completed: "border-emerald-500/20 bg-emerald-500/10 text-emerald-300",
+  processing: "border-amber-500/20 bg-amber-500/10 text-amber-300",
+  pending: "border-amber-500/20 bg-amber-500/10 text-amber-300",
+  failed: "border-red-500/20 bg-red-500/10 text-red-300",
+};
 
 export default function ReportsPage() {
-  const totalReports = reports.length
-  const sentReports = reports.filter(r => r.status === "sent").length
-  const totalImpact = reports.reduce(
-    (sum, r) => sum + (r.estimatedImpact || 0),
+  const [reports, setReports] = useState<ReportRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
+
+  useEffect(() => {
+    async function fetchReports() {
+      try {
+        setLoading(true);
+        const res = await fetch("/api/v1/reports", { cache: "no-store" });
+        const data = await res.json();
+
+        if (!res.ok) throw new Error(data.error || "Failed to fetch reports");
+
+        setReports(data.reports || []);
+      } catch (err) {
+        console.error("Error fetching reports:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReports();
+  }, []);
+
+  const totalRevenue = reports.reduce(
+    (acc, report) =>
+      acc + Number(report.estimated_monthly_revenue ?? report.estimatedImpact ?? 0),
     0
-  )
+  );
+
+  const averageScore = reports.length
+    ? reports.reduce((acc, report) => acc + Number(report.overall_score ?? report.score ?? 0), 0) /
+      reports.length
+    : 0;
+
+  const filteredReports = useMemo(() => {
+    return reports.filter((report) => {
+      const normalizedQuery = query.toLowerCase();
+      const matchesQuery =
+        (report.business_name || "").toLowerCase().includes(normalizedQuery) ||
+        (report.industry || "").toLowerCase().includes(normalizedQuery) ||
+        (report.report_code || "").toLowerCase().includes(normalizedQuery);
+
+      const normalizedStatus = (report.status || "ready").toLowerCase();
+      const matchesStatus = statusFilter === "all" || normalizedStatus === statusFilter;
+
+      return matchesQuery && matchesStatus;
+    });
+  }, [reports, query, statusFilter]);
 
   return (
-    <div className="p-6 space-y-8 w-full">
-      {/* HEADER */}
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Reports</h1>
+    <div className="space-y-6 p-6 text-white">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">Reports</h1>
+          <p className="mt-1 text-sm text-zinc-500">
+            Track generated business audits, scores, and revenue opportunities.
+          </p>
+        </div>
+
         <Link
           href="/admin/reports/new"
-          className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg"
+          className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-4 py-2 font-semibold text-black transition hover:bg-cyan-400"
         >
-          + Create Report
+          <Plus size={16} />
+          New Report
         </Link>
       </div>
 
-      {/* STATS */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <StatCard title="Total Reports" value={totalReports} />
-        <StatCard title="Reports Sent" value={sentReports} />
-        <StatCard title="Estimated Revenue Impact" value={`$${totalImpact}`} />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <KpiCard title="Total Reports" value={reports.length.toString()} />
+        <KpiCard title="Avg. Score" value={averageScore ? averageScore.toFixed(1) : "0.0"} />
+        <KpiCard title="Est. Monthly Revenue" value={`$${totalRevenue.toLocaleString()}`} />
       </div>
 
-      {/* TABLE */}
-      <div className="bg-white rounded-xl shadow overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="p-4 text-left">Title</th>
-              <th className="p-4 text-left">Type</th>
-              <th className="p-4 text-left">Score</th>
-              <th className="p-4 text-left">Impact</th>
-              <th className="p-4 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reports.map(r => (
-              <tr
-                key={r.id}
-                className="border-t hover:bg-purple-50 cursor-pointer"
-              >
-                <td className="p-4 font-medium">
-                  <Link href={`/admin/reports/${r.id}`}>
-                    {r.title}
-                  </Link>
-                </td>
-                <td className="p-4 capitalize">{r.type.replace("-", " ")}</td>
-                <td className="p-4">{r.score ?? "-"}</td>
-                <td className="p-4">${r.estimatedImpact ?? 0}</td>
-                <td className="p-4 capitalize">{r.status}</td>
+      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+        <div className="flex w-full items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 md:w-[420px]">
+          <Search size={16} className="text-zinc-400" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search by business, industry, or code..."
+            className="w-full bg-transparent text-sm outline-none"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {["all", "ready", "processing", "failed"].map((status) => (
+            <button
+              key={status}
+              onClick={() => setStatusFilter(status)}
+              className={`rounded-lg border px-3 py-1 text-xs capitalize transition ${
+                statusFilter === status
+                  ? "border-cyan-500 bg-cyan-500 text-black"
+                  : "border-white/10 bg-white/5 text-zinc-300 hover:bg-white/10"
+              }`}
+            >
+              {status}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/5">
+        {loading ? (
+          <div className="flex min-h-[300px] items-center justify-center gap-3 text-zinc-400">
+            <Loader2 size={20} className="animate-spin text-cyan-400" />
+            Loading reports...
+          </div>
+        ) : filteredReports.length === 0 ? (
+          <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 p-6 text-center">
+            <FileText size={30} className="text-zinc-500" />
+            <div>
+              <p className="text-lg font-semibold">No reports found</p>
+              <p className="mt-1 text-sm text-zinc-500">
+                Try changing filters or create a new report.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <table className="w-full text-sm">
+            <thead className="border-b border-white/10 bg-black/20 text-zinc-400">
+              <tr>
+                <th className="px-4 py-3 text-left font-medium">Business</th>
+                <th className="px-4 py-3 text-left font-medium">Code</th>
+                <th className="px-4 py-3 text-left font-medium">Score</th>
+                <th className="px-4 py-3 text-left font-medium">Revenue</th>
+                <th className="px-4 py-3 text-left font-medium">Status</th>
+                <th className="px-4 py-3 text-left font-medium">Generated</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredReports.map((report) => {
+                const reportHref = `/admin/reports/${report.report_slug}`;
+                const status = (report.status || "ready").toLowerCase();
+
+                return (
+                  <tr key={report.report_slug} className="border-b border-white/5 hover:bg-white/5">
+                    <td className="px-4 py-3">
+                      <Link href={reportHref} className="group inline-flex items-center gap-2 font-medium hover:text-cyan-300">
+                        {report.business_name || "Untitled report"}
+                        <ArrowUpRight size={14} className="opacity-0 transition group-hover:opacity-100" />
+                      </Link>
+                      <p className="mt-0.5 text-xs text-zinc-500">{report.industry || "N/A"}</p>
+                    </td>
+                    <td className="px-4 py-3 text-zinc-300">{report.report_slug || "-"}</td>
+                    <td className="px-4 py-3 font-semibold text-cyan-300">
+                      {report.overall_score ?? report.score ?? "-"}
+                    </td>
+                    <td className="px-4 py-3 text-zinc-300">
+                      ${Number(report.estimated_monthly_revenue ?? report.estimatedImpact ?? 0).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`rounded-full border px-2 py-1 text-xs font-medium capitalize ${
+                          statusStyles[status] || "border-white/10 bg-white/5 text-zinc-300"
+                        }`}
+                      >
+                        {status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-zinc-400">
+                      {report.audit_date || report.created_at
+                        ? new Date(report.audit_date || report.created_at || "").toLocaleDateString()
+                        : "-"}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-function StatCard({ title, value }: { title: string; value: any }) {
+function KpiCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className="bg-white rounded-xl shadow p-6">
-      <p className="text-sm text-gray-500">{title}</p>
-      <p className="text-3xl font-bold mt-2">{value}</p>
+    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p className="text-xs text-zinc-500">{title}</p>
+      <p className="mt-2 text-2xl font-bold">{value}</p>
     </div>
-  )
+  );
 }
 

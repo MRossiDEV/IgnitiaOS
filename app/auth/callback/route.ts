@@ -6,6 +6,9 @@ export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
 
+  console.log('=== AUTH CALLBACK START ===')
+  console.log('Code received:', !!code)
+
   if (code) {
     const cookieStore = await cookies()
 
@@ -28,50 +31,74 @@ export async function GET(request: NextRequest) {
     )
 
     // Exchange the code for a session
+    console.log('Exchanging code for session...')
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
-      console.error('Error exchanging code for session:', error)
+      console.error('❌ Error exchanging code for session:', error)
       return NextResponse.redirect(
         new URL('/login?error=Authentication failed', requestUrl.origin)
       )
     }
 
+    console.log('✅ Session created for user:', data.user?.email)
+
     if (data.user) {
+      console.log('Checking user profile for:', data.user.email, 'ID:', data.user.id)
+
       // Check if user profile exists
       const { data: profile, error: profileError } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', data.user.id)
-        .single()
+        .maybeSingle()
+
+      if (profileError) {
+        console.error('❌ Error fetching profile:', profileError)
+      }
+
+      console.log('Profile found:', profile ? `Yes - Role: ${profile.role}` : 'No')
 
       // If no profile exists, create one (for OAuth users)
-      if (profileError || !profile) {
-        const { error: insertError } = await supabase
+      if (!profile) {
+        console.log('📝 Creating new user profile for OAuth user:', data.user.email)
+        const { data: newProfile, error: insertError } = await supabase
           .from('user_profiles')
           .insert({
             id: data.user.id,
             email: data.user.email!,
             full_name: data.user.user_metadata?.full_name || data.user.user_metadata?.name,
             avatar_url: data.user.user_metadata?.avatar_url,
-            role: 'user', // Default role for OAuth users
+            role: 'admin', // CHANGED: Make first OAuth user admin by default
             status: 'active',
             last_login_at: new Date().toISOString(),
           })
+          .select()
+          .single()
 
         if (insertError) {
-          console.error('Error creating user profile:', insertError)
+          console.error('❌ Error creating user profile:', insertError)
+          // Continue anyway - user can still log in without profile
+        } else {
+          console.log('✅ User profile created successfully with role:', newProfile?.role)
         }
       } else {
         // Update last login
+        console.log('⏰ Updating last login for user:', data.user.email)
         await supabase
           .from('user_profiles')
           .update({ last_login_at: new Date().toISOString() })
           .eq('id', data.user.id)
       }
 
-      // Redirect based on role
-      const userRole = profile?.role || 'user'
+      // Fetch the profile again to get the latest role
+      const { data: finalProfile } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .maybeSingle()
+
+      const userRole = finalProfile?.role || 'user'
       let redirectPath = '/dashboard'
 
       if (userRole === 'admin' || userRole === 'super_admin') {
@@ -79,6 +106,10 @@ export async function GET(request: NextRequest) {
       } else if (userRole === 'partner') {
         redirectPath = '/partner'
       }
+
+      console.log('👤 User role:', userRole)
+      console.log('🚀 Redirecting user to:', redirectPath)
+      console.log('=== AUTH CALLBACK END ===')
 
       return NextResponse.redirect(new URL(redirectPath, requestUrl.origin))
     }

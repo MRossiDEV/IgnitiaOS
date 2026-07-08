@@ -1,299 +1,275 @@
-"use client"
+"use client";
 
-import { useMemo } from "react"
-import { leads as mockLeads } from "@/lib/mock/leads"
-import { reports as mockReports } from "@/lib/mock/reports"
+import { useMemo, useState } from "react";
+import {
+  leads as mockLeads,
+} from "@/lib/mock/leads";
+import {
+  reports as mockReports,
+} from "@/lib/mock/reports";
+
 import {
   TrendingUp,
   Target,
   DollarSign,
+  Activity,
   BarChart3,
-} from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+  Search,
+  ArrowUpRight,
+  AlertTriangle,
+  Globe,
+} from "lucide-react";
+
+/**
+ * IGNITIAOS — ANALYTICS INTELLIGENCE CENTER (UPGRADED UI)
+ * Funnel intelligence + attribution + performance systems
+ */
 
 export default function AnalyticsPage() {
-  const funnelData = useMemo(() => {
-    const totalLeads = mockLeads.length
-    const contacted = mockLeads.filter((l) => l.status !== "new").length
-    const qualified = mockLeads.filter((l) => l.status === "qualified" || l.status === "converted").length
-    const converted = mockLeads.filter((l) => l.status === "converted").length
+  const [tab, setTab] = useState<"overview" | "funnel" | "sources" | "revenue">(
+    "overview"
+  );
 
-    const contactedRate = totalLeads > 0 ? ((contacted / totalLeads) * 100).toFixed(1) : "0"
-    const qualifiedRate = contacted > 0 ? ((qualified / contacted) * 100).toFixed(1) : "0"
-    const convertedRate = qualified > 0 ? ((converted / qualified) * 100).toFixed(1) : "0"
+  const funnelData = useMemo(() => {
+    const totalLeads = mockLeads.length;
+    const contacted = mockLeads.filter((l) => l.status !== "new").length;
+    const qualified = mockLeads.filter(
+      (l) => l.status === "qualified" || l.status === "converted"
+    ).length;
+    const converted = mockLeads.filter((l) => l.status === "converted").length;
 
     return {
-      stages: [
-        { name: "Total Leads", count: totalLeads, rate: "100%", dropOff: 0 },
-        { name: "Contacted", count: contacted, rate: contactedRate + "%", dropOff: totalLeads - contacted },
-        { name: "Qualified", count: qualified, rate: qualifiedRate + "%", dropOff: contacted - qualified },
-        { name: "Converted", count: converted, rate: convertedRate + "%", dropOff: qualified - converted },
-      ],
-    }
-  }, [])
+      totalLeads,
+      contacted,
+      qualified,
+      converted,
+      contactRate: totalLeads ? (contacted / totalLeads) * 100 : 0,
+      qualifyRate: contacted ? (qualified / contacted) * 100 : 0,
+      convertRate: qualified ? (converted / qualified) * 100 : 0,
+    };
+  }, []);
 
   const sourcePerformance = useMemo(() => {
-    const sources = ["audit", "manual", "referral", "campaign"] as const
+    const sources = ["audit", "manual", "referral", "campaign"] as const;
+
     return sources.map((source) => {
-      const sourceLeads = mockLeads.filter((l) => l.source === source)
-      const converted = sourceLeads.filter((l) => l.status === "converted").length
-      const conversionRate = sourceLeads.length > 0 ? ((converted / sourceLeads.length) * 100).toFixed(1) : "0"
-      const revenue = converted * 500
+      const leads = mockLeads.filter((l) => l.source === source);
+      const converted = leads.filter((l) => l.status === "converted").length;
+      const revenue = converted * 500;
 
       return {
         source,
-        leads: sourceLeads.length,
+        leads: leads.length,
         converted,
-        conversionRate,
+        rate: leads.length ? (converted / leads.length) * 100 : 0,
         revenue,
-      }
-    })
-  }, [])
+      };
+    });
+  }, []);
 
   const industryPerformance = useMemo(() => {
-    const industries = [...new Set(mockLeads.map((l) => l.industry).filter(Boolean))] as string[]
+    const industries = [
+      ...new Set(mockLeads.map((l) => l.industry).filter(Boolean)),
+    ] as string[];
+
     return industries.map((industry) => {
-      const industryLeads = mockLeads.filter((l) => l.industry === industry)
-      const converted = industryLeads.filter((l) => l.status === "converted").length
-      const conversionRate = industryLeads.length > 0 ? ((converted / industryLeads.length) * 100).toFixed(1) : "0"
-      const avgValue = industryLeads.length > 0
-        ? industryLeads.reduce((sum, l) => sum + (l.estimatedValue || 0), 0) / industryLeads.length
-        : 0
+      const leads = mockLeads.filter((l) => l.industry === industry);
+      const converted = leads.filter((l) => l.status === "converted").length;
+
+      const avgValue =
+        leads.length > 0
+          ? leads.reduce((s, l) => s + (l.estimatedValue || 0), 0) /
+            leads.length
+          : 0;
 
       return {
         industry,
-        leads: industryLeads.length,
+        leads: leads.length,
         converted,
-        conversionRate,
-        avgValue: avgValue.toFixed(0),
-      }
-    }).sort((a, b) => b.leads - a.leads)
-  }, [])
+        rate: leads.length ? (converted / leads.length) * 100 : 0,
+        avgValue,
+      };
+    });
+  }, []);
 
-  const timeMetrics = useMemo(() => {
-    const convertedLeads = mockLeads.filter((l) => l.status === "converted" && l.convertedAt)
-    const times = convertedLeads.map((l) => {
-      const created = new Date(l.createdAt).getTime()
-      const converted = new Date(l.convertedAt!).getTime()
-      return (converted - created) / (1000 * 60 * 60 * 24)
-    })
+  const revenue = useMemo(() => {
+    const paid = mockReports.filter((r) => r.type === "blueprint");
+    return paid.length * 500;
+  }, []);
 
-    const avgTime = times.length > 0 ? (times.reduce((sum, t) => sum + t, 0) / times.length).toFixed(1) : "0"
-
-    return {
-      avgTimeToConvert: avgTime,
-      totalConverted: convertedLeads.length,
-    }
-  }, [])
-
-  const revenueAttribution = useMemo(() => {
-    const paidReports = mockReports.filter((r) => r.type === "blueprint")
-    const totalRevenue = paidReports.length * 500
-
-    const bySource = sourcePerformance.map((s) => ({
-      source: s.source,
-      revenue: s.revenue,
-      percentage: totalRevenue > 0 ? ((s.revenue / totalRevenue) * 100).toFixed(1) : "0",
-    }))
-
-    return {
-      totalRevenue,
-      bySource,
-    }
-  }, [sourcePerformance])
+  const totalConverted = mockLeads.filter(
+    (l) => l.status === "converted"
+  ).length;
 
   return (
-    <div className="p-4 md:p-6 space-y-6 w-full">
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-purple-700">Analytics & Insights</h1>
-        <p className="text-sm text-gray-500 mt-1">Understand what is working and what is leaking</p>
+    <div className="p-6 space-y-6 text-white">
+
+      {/* HEADER */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold">Analytics Intelligence</h1>
+          <p className="text-zinc-500 text-sm">
+            Revenue attribution + funnel leak detection system
+          </p>
+        </div>
+
+        <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl px-3 py-2 w-[360px]">
+          <Search size={16} className="text-zinc-400" />
+          <input
+            placeholder="Search insights..."
+            className="bg-transparent outline-none w-full text-sm"
+          />
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Overall Conversion</CardTitle>
-            <Target className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {((timeMetrics.totalConverted / mockLeads.length) * 100).toFixed(1)}%
-            </div>
-            <p className="text-xs text-muted-foreground mt-1">
-              {timeMetrics.totalConverted} of {mockLeads.length} leads
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Avg Time to Convert</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{timeMetrics.avgTimeToConvert} days</div>
-            <p className="text-xs text-muted-foreground mt-1">From lead to conversion</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${revenueAttribution.totalRevenue.toLocaleString()}</div>
-            <p className="text-xs text-muted-foreground mt-1">From paid blueprints</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Sources</CardTitle>
-            <BarChart3 className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{sourcePerformance.filter((s) => s.leads > 0).length}</div>
-            <p className="text-xs text-muted-foreground mt-1">Lead sources generating traffic</p>
-          </CardContent>
-        </Card>
+      {/* TABS */}
+      <div className="flex gap-2 flex-wrap border-b border-white/10 pb-3">
+        <Tab active={tab === "overview"} onClick={() => setTab("overview")} label="Overview" icon={<Activity size={14} />} />
+        <Tab active={tab === "funnel"} onClick={() => setTab("funnel")} label="Funnel" icon={<Target size={14} />} />
+        <Tab active={tab === "sources"} onClick={() => setTab("sources")} label="Sources" icon={<Globe size={14} />} />
+        <Tab active={tab === "revenue"} onClick={() => setTab("revenue")} label="Revenue" icon={<DollarSign size={14} />} />
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Funnel Analytics</CardTitle>
-          <CardDescription>See where leads drop off</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {funnelData.stages.map((stage, index) => (
-            <div key={stage.name}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  <div className="font-medium">{stage.name}</div>
-                  <Badge variant="secondary">{stage.count} leads</Badge>
-                </div>
-                <div className="text-sm text-muted-foreground">{stage.rate}</div>
+      {/* OVERVIEW */}
+      {tab === "overview" && (
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+
+          <KPI title="Total Leads" value={funnelData.totalLeads} icon={<Activity size={16} />} />
+          <KPI title="Converted" value={totalConverted} icon={<Target size={16} />} />
+          <KPI title="Conversion Rate" value={`${((totalConverted / funnelData.totalLeads) * 100).toFixed(1)}%`} icon={<TrendingUp size={16} />} />
+          <KPI title="Revenue" value={`$${revenue.toLocaleString()}`} icon={<DollarSign size={16} />} />
+
+        </div>
+      )}
+
+      {/* FUNNEL */}
+      {tab === "funnel" && (
+        <div className="border border-white/10 bg-white/5 rounded-2xl p-5 space-y-4">
+
+          <h2 className="font-bold text-lg">Funnel Leakage Map</h2>
+
+          <FunnelRow label="Total Leads" value={funnelData.totalLeads} rate={100} />
+          <FunnelRow label="Contacted" value={funnelData.contacted} rate={funnelData.contactRate} />
+          <FunnelRow label="Qualified" value={funnelData.qualified} rate={funnelData.qualifyRate} />
+          <FunnelRow label="Converted" value={funnelData.converted} rate={funnelData.convertRate} />
+
+        </div>
+      )}
+
+      {/* SOURCES */}
+      {tab === "sources" && (
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+          {sourcePerformance.map((s) => (
+            <div key={s.source} className="border border-white/10 bg-white/5 rounded-2xl p-5">
+
+              <div className="flex justify-between">
+                <p className="font-semibold capitalize">{s.source}</p>
+                <span className="text-xs text-zinc-500">{s.rate.toFixed(1)}%</span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-purple-600 h-2 rounded-full transition-all"
-                  style={{ width: stage.rate }}
-                />
+
+              <div className="mt-3 grid grid-cols-3 text-xs gap-2">
+                <Mini label="Leads" value={s.leads} />
+                <Mini label="Conv" value={s.converted} />
+                <Mini label="Rev" value={`$${s.revenue}`} />
               </div>
-              {stage.dropOff > 0 && (
-                <div className="text-xs text-orange-600 mt-1">
-                  ⚠️ {stage.dropOff} leads dropped off
-                </div>
-              )}
+
+              <div className="mt-4 h-2 bg-white/10 rounded">
+                <div className="h-2 bg-cyan-500 rounded" style={{ width: `${s.rate}%` }} />
+              </div>
+
             </div>
           ))}
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Lead Source Performance</CardTitle>
-          <CardDescription>Which channels convert best</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Source</TableHead>
-                <TableHead>Leads</TableHead>
-                <TableHead>Converted</TableHead>
-                <TableHead>Conversion Rate</TableHead>
-                <TableHead>Revenue</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sourcePerformance.map((source) => (
-                <TableRow key={source.source}>
-                  <TableCell className="font-medium capitalize">{source.source}</TableCell>
-                  <TableCell>{source.leads}</TableCell>
-                  <TableCell>{source.converted}</TableCell>
-                  <TableCell>
-                    <Badge variant={parseFloat(source.conversionRate) > 20 ? "default" : "secondary"}>
-                      {source.conversionRate}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-semibold">${source.revenue.toLocaleString()}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+        </div>
+      )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Industry Performance</CardTitle>
-          <CardDescription>Which industries convert best</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Industry</TableHead>
-                <TableHead>Leads</TableHead>
-                <TableHead>Converted</TableHead>
-                <TableHead>Conversion Rate</TableHead>
-                <TableHead>Avg Lead Value</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {industryPerformance.map((industry) => (
-                <TableRow key={industry.industry}>
-                  <TableCell className="font-medium">{industry.industry}</TableCell>
-                  <TableCell>{industry.leads}</TableCell>
-                  <TableCell>{industry.converted}</TableCell>
-                  <TableCell>
-                    <Badge variant={parseFloat(industry.conversionRate) > 20 ? "default" : "secondary"}>
-                      {industry.conversionRate}%
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="font-semibold">${industry.avgValue}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* REVENUE */}
+      {tab === "revenue" && (
+        <div className="space-y-4">
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Revenue Attribution</CardTitle>
-          <CardDescription>Where your money comes from</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {revenueAttribution.bySource.map((source) => (
-            <div key={source.source}>
-              <div className="flex items-center justify-between mb-2">
-                <div className="font-medium capitalize">{source.source}</div>
-                <div className="text-sm text-muted-foreground">
-                  ${source.revenue.toLocaleString()} ({source.percentage}%)
+          <div className="border border-white/10 bg-white/5 rounded-2xl p-5">
+            <h2 className="font-bold text-lg">Total Revenue Attribution</h2>
+            <p className="text-3xl font-bold mt-2">${revenue.toLocaleString()}</p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+            {sourcePerformance.map((s) => (
+              <div key={s.source} className="border border-white/10 bg-white/5 rounded-2xl p-5">
+
+                <div className="flex justify-between">
+                  <p className="capitalize font-semibold">{s.source}</p>
+                  <p className="text-sm text-zinc-400">${s.revenue}</p>
                 </div>
+
+                <div className="mt-3 h-2 bg-white/10 rounded">
+                  <div className="h-2 bg-green-500 rounded" style={{ width: `${(s.revenue / revenue) * 100}%` }} />
+                </div>
+
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-green-600 h-2 rounded-full transition-all"
-                  style={{ width: `${source.percentage}%` }}
-                />
-              </div>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
+            ))}
+
+          </div>
+
+        </div>
+      )}
+
     </div>
-  )
+  );
 }
 
+/* ================= COMPONENTS ================= */
+
+function KPI({ title, value, icon }: any) {
+  return (
+    <div className="border border-white/10 bg-white/5 rounded-2xl p-4">
+      <div className="flex justify-between">
+        <p className="text-xs text-zinc-500">{title}</p>
+        <div className="text-cyan-400">{icon}</div>
+      </div>
+      <p className="text-2xl font-bold mt-2">{value}</p>
+    </div>
+  );
+}
+
+function Tab({ active, onClick, label, icon }: any) {
+  return (
+    <button
+      onClick={onClick}
+      className={`flex items-center gap-2 px-3 py-1 rounded-lg text-xs border ${
+        active
+          ? "bg-cyan-500 text-black border-cyan-500"
+          : "bg-white/5 border-white/10 text-zinc-400 hover:bg-white/10"
+      }`}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+}
+
+function FunnelRow({ label, value, rate }: any) {
+  return (
+    <div>
+      <div className="flex justify-between text-sm">
+        <p>{label}</p>
+        <p className="text-zinc-400">
+          {value} ({rate.toFixed ? rate.toFixed(1) : rate}%)
+        </p>
+      </div>
+      <div className="h-2 bg-white/10 rounded mt-2">
+        <div className="h-2 bg-purple-500 rounded" style={{ width: `${rate}%` }} />
+      </div>
+    </div>
+  );
+}
+
+function Mini({ label, value }: any) {
+  return (
+    <div className="bg-black/30 border border-white/10 rounded-lg p-2 text-center">
+      <p className="text-[10px] text-zinc-500">{label}</p>
+      <p className="text-sm font-semibold">{value}</p>
+    </div>
+  );
+}

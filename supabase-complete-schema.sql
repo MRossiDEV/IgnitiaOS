@@ -1082,6 +1082,59 @@ COMMENT ON TABLE audit_logs IS 'Audit trail for all important actions';
 COMMENT ON TABLE analytics_events IS 'Analytics and tracking events';
 
 -- ============================================================================
+-- ORDERS TABLE (for paid offers)
+-- ============================================================================
+
+CREATE TABLE IF NOT EXISTS orders (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  organization_id UUID NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  lead_id UUID REFERENCES leads(id) ON DELETE SET NULL,
+  payment_session_id UUID REFERENCES payment_sessions(id) ON DELETE SET NULL,
+  
+  -- Order details
+  type TEXT NOT NULL CHECK (type IN ('audit', 'optimization', 'automation', 'custom')),
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'pending', 'active', 'completed', 'cancelled')),
+  amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
+  currency TEXT NOT NULL DEFAULT 'USD' CHECK (currency IN ('USD', 'EUR', 'GBP', 'CAD', 'AUD')),
+  
+  -- Delivery tracking
+  delivery_started_at TIMESTAMPTZ,
+  delivery_completed_at TIMESTAMPTZ,
+  expected_completion_at TIMESTAMPTZ,
+  
+  -- Notes and metadata
+  notes TEXT,
+  metadata JSONB DEFAULT '{}',
+  
+  -- Timestamps
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  created_by UUID REFERENCES auth.users(id),
+  
+  CONSTRAINT order_lead_organization CHECK (
+    lead_id IS NULL OR EXISTS (
+      SELECT 1 FROM leads WHERE leads.id = lead_id AND leads.organization_id = orders.organization_id
+    )
+  )
+);
+
+-- Create indexes for performance
+CREATE INDEX idx_orders_organization_id ON orders(organization_id);
+CREATE INDEX idx_orders_lead_id ON orders(lead_id);
+CREATE INDEX idx_orders_payment_session_id ON orders(payment_session_id);
+CREATE INDEX idx_orders_status ON orders(status);
+CREATE INDEX idx_orders_type ON orders(type);
+CREATE INDEX idx_orders_created_at ON orders(created_at DESC);
+
+-- Comments
+COMMENT ON TABLE orders IS 'Customer orders for paid services (audits, optimization, automation)';
+COMMENT ON COLUMN orders.type IS 'Type of service: audit, optimization, automation, or custom';
+COMMENT ON COLUMN orders.status IS 'Current order status: draft (not paid), pending (payment processing), active (in progress), completed, or cancelled';
+COMMENT ON COLUMN orders.delivery_started_at IS 'Timestamp when work began on the order';
+COMMENT ON COLUMN orders.delivery_completed_at IS 'Timestamp when order was completed';
+COMMENT ON COLUMN orders.expected_completion_at IS 'Estimated completion date';
+
+-- ============================================================================
 -- SCHEMA COMPLETE
 -- ============================================================================
 

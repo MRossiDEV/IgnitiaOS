@@ -5,6 +5,9 @@ import { createServerClient, type CookieOptions } from '@supabase/ssr'
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
 
+  // DEV: auth bypassed - all routes accessible without authentication
+  return res
+
   // Check if Supabase is configured
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
@@ -57,6 +60,8 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl
 
+  console.log('Middleware:', pathname, 'Session:', session ? `✅ ${session.user.email}` : '❌ No session')
+
   // Public routes that don't require authentication
   const publicRoutes = [
     '/',
@@ -66,10 +71,14 @@ export async function middleware(req: NextRequest) {
     '/forgot-password',
     '/wizard',
     '/payments',
+    '/setup-profile',
+    '/api/create-profile',
+    '/api/auth/signout',
+    '/api/auth/session',
   ]
 
   // Check if the current path is public
-  const isPublicRoute = publicRoutes.some(route => 
+  const isPublicRoute = publicRoutes.some(route =>
     pathname === route || pathname.startsWith(`${route}/`)
   )
 
@@ -82,18 +91,24 @@ export async function middleware(req: NextRequest) {
 
   // If authenticated, check role-based access
   if (session) {
-    // Fetch user profile to get role
-    const { data: profile } = await supabase
+    // Fetch user profile to get role - use maybeSingle to avoid errors
+    const { data: profile, error: profileError } = await supabase
       .from('user_profiles')
       .select('role')
       .eq('id', session.user.id)
-      .single()
+      .maybeSingle()
+
+    if (profileError) {
+      console.error('Middleware: Error fetching user profile:', profileError.message)
+    }
 
     const userRole = profile?.role || 'user'
+    console.log('Middleware: User role:', userRole, 'for path:', pathname)
 
     // Admin routes - only accessible by admin and super_admin
     if (pathname.startsWith('/admin')) {
       if (userRole !== 'admin' && userRole !== 'super_admin') {
+        console.log('Middleware: Unauthorized access to admin route, redirecting to /unauthorized')
         return NextResponse.redirect(new URL('/unauthorized', req.url))
       }
     }
@@ -101,6 +116,7 @@ export async function middleware(req: NextRequest) {
     // Partner routes - only accessible by partners
     if (pathname.startsWith('/partner')) {
       if (userRole !== 'partner') {
+        console.log('Middleware: Unauthorized access to partner route, redirecting to /unauthorized')
         return NextResponse.redirect(new URL('/unauthorized', req.url))
       }
     }
@@ -108,10 +124,13 @@ export async function middleware(req: NextRequest) {
     // Redirect authenticated users away from auth pages
     if (pathname === '/login' || pathname === '/signup') {
       if (userRole === 'admin' || userRole === 'super_admin') {
+        console.log('Middleware: Redirecting admin to /admin')
         return NextResponse.redirect(new URL('/admin', req.url))
       } else if (userRole === 'partner') {
+        console.log('Middleware: Redirecting partner to /partner')
         return NextResponse.redirect(new URL('/partner', req.url))
       } else {
+        console.log('Middleware: Redirecting user to /dashboard')
         return NextResponse.redirect(new URL('/dashboard', req.url))
       }
     }

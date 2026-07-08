@@ -4,6 +4,8 @@ import { Lead } from "@/lib/models/lead"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +18,18 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card"
-import { Phone, Mail, Clock, Flame, AlertCircle, MoreVertical, Calendar } from "lucide-react"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import { Phone, Mail, Clock, Flame, AlertCircle, MoreVertical, Calendar, Plus, Check, X } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { useRouter } from "next/navigation"
 import { toast } from "sonner"
+import { useState } from "react"
 
 interface LeadCardProps {
   lead: Lead
@@ -28,6 +38,12 @@ interface LeadCardProps {
 
 export function LeadCardComponent({ lead, onUpdate }: LeadCardProps) {
   const router = useRouter()
+  const [showNoteDialog, setShowNoteDialog] = useState(false)
+  const [noteText, setNoteText] = useState("")
+  const [isAddingNote, setIsAddingNote] = useState(false)
+  const [showConvertDialog, setShowConvertDialog] = useState(false)
+  const [isConverting, setIsConverting] = useState(false)
+
   const {
     attributes,
     listeners,
@@ -45,6 +61,12 @@ export function LeadCardComponent({ lead, onUpdate }: LeadCardProps) {
 
   const isOverdue =
     lead.nextFollowUpAt && new Date(lead.nextFollowUpAt) < new Date()
+
+  // Check if not contacted in 48 hours
+  const notContactedIn48h =
+    (!lead.lastContactedAt || new Date(lead.lastContactedAt) < new Date(Date.now() - 48 * 60 * 60 * 1000)) &&
+    lead.status !== "lost" &&
+    lead.status !== "converted"
 
   const priorityConfig = {
     hot: { color: "destructive", icon: Flame, label: "Hot" },
@@ -72,6 +94,69 @@ export function LeadCardComponent({ lead, onUpdate }: LeadCardProps) {
     }
   }
 
+  const handleAddNote = async () => {
+    if (!noteText.trim()) {
+      toast.error("Please enter a note")
+      return
+    }
+
+    setIsAddingNote(true)
+    try {
+      const updatedNotes = lead.notes ? `${lead.notes}\n---\n${noteText}` : noteText
+      
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notes: updatedNotes }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to add note")
+      }
+
+      const data = await response.json()
+      onUpdate(data.lead)
+      toast.success("Note added ✅")
+      setShowNoteDialog(false)
+      setNoteText("")
+    } catch (error) {
+      console.error("Error adding note:", error)
+      toast.error("Failed to add note")
+    } finally {
+      setIsAddingNote(false)
+    }
+  }
+
+  const handleConvertToOrder = async () => {
+    setIsConverting(true)
+    try {
+      // First, update lead status to converted
+      const response = await fetch(`/api/leads/${lead.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "converted" }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to convert lead")
+      }
+
+      const data = await response.json()
+      onUpdate(data.lead)
+
+      // Redirect to create order with lead info pre-filled
+      router.push(`/admin/orders/new?leadId=${lead.id}&name=${encodeURIComponent(lead.name || '')}&email=${encodeURIComponent(lead.email)}&company=${encodeURIComponent(lead.company || '')}&estimatedValue=${lead.estimatedValue || 0}`)
+      
+      toast.success("Lead converted! Creating order...")
+      setShowConvertDialog(false)
+    } catch (error) {
+      console.error("Error converting lead:", error)
+      toast.error("Failed to convert lead")
+    } finally {
+      setIsConverting(false)
+    }
+  }
+
   return (
     <div
       ref={setNodeRef}
@@ -81,8 +166,9 @@ export function LeadCardComponent({ lead, onUpdate }: LeadCardProps) {
       className={`
         cursor-grab active:cursor-grabbing
         bg-white rounded-xl shadow-md p-4 
-        hover:shadow-xl transition-all border border-gray-200
-        ${isOverdue ? "border-l-4 border-l-red-500" : ""}
+        hover:shadow-xl transition-all border
+        ${isOverdue ? "border-l-4 border-l-red-500 border-red-300" : "border-gray-200"}
+        ${notContactedIn48h ? "bg-amber-50 border-l-4 border-l-amber-500" : ""}
         ${priority?.color === "destructive" ? "border-l-4 border-l-orange-500" : ""}
       `}
     >
@@ -130,6 +216,12 @@ export function LeadCardComponent({ lead, onUpdate }: LeadCardProps) {
             <Badge variant={priority.color as any} className="text-xs">
               <priority.icon className="w-3 h-3 mr-1" />
               {priority.label}
+            </Badge>
+          )}
+          {notContactedIn48h && (
+            <Badge variant="secondary" className="text-xs bg-amber-200 text-amber-900 animate-pulse">
+              <AlertCircle className="w-3 h-3 mr-1" />
+              No Contact 48h
             </Badge>
           )}
           {isOverdue && (
@@ -239,21 +331,95 @@ export function LeadCardComponent({ lead, onUpdate }: LeadCardProps) {
             <DropdownMenuItem
               onClick={(e) => {
                 e.stopPropagation()
-                toast.info("Quick edit coming soon!")
+                setShowNoteDialog(true)
               }}
             >
-              Quick Edit
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={(e) => {
-                e.stopPropagation()
-                toast.info("Add note coming soon!")
-              }}
-            >
+              <Plus className="w-3.5 h-3.5 mr-2" />
               Add Note
             </DropdownMenuItem>
+            {lead.status !== "converted" && (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setShowConvertDialog(true)
+                }}
+                className="text-green-700"
+              >
+                Convert to Order
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
+
+        {/* Add Note Dialog */}
+        <Dialog open={showNoteDialog} onOpenChange={setShowNoteDialog}>
+          <DialogContent onClick={(e) => e.stopPropagation()}>
+            <DialogHeader>
+              <DialogTitle>Add Note to {lead.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <textarea
+                placeholder="Write your note here..."
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                className="w-full p-3 border rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                rows={4}
+              />
+            </div>
+            <DialogFooter className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowNoteDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddNote}
+                disabled={isAddingNote || !noteText.trim()}
+              >
+                {isAddingNote ? "Adding..." : "Add Note"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        {/* Convert to Order Dialog */}
+        <Dialog open={showConvertDialog} onOpenChange={setShowConvertDialog}>
+          <DialogContent onClick={(e) => e.stopPropagation()}>
+            <DialogHeader>
+              <DialogTitle>Convert Lead to Order</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm font-medium mb-2">Lead Details:</p>
+                <div className="bg-muted p-3 rounded-lg space-y-1 text-sm">
+                  <p><span className="font-semibold">Name:</span> {lead.name}</p>
+                  <p><span className="font-semibold">Email:</span> {lead.email}</p>
+                  {lead.company && <p><span className="font-semibold">Company:</span> {lead.company}</p>}
+                  {lead.estimatedValue && <p><span className="font-semibold">Est. Value:</span> ${lead.estimatedValue.toLocaleString()}</p>}
+                </div>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                This will move the lead to "converted" status and open the order creation form.
+              </p>
+            </div>
+            <DialogFooter className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowConvertDialog(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleConvertToOrder}
+                disabled={isConverting}
+                className="bg-green-700 hover:bg-green-800"
+              >
+                {isConverting ? "Converting..." : "Convert to Order"}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )
