@@ -27,7 +27,9 @@ import {
   Database,
   FileText,
   BottleWine,
-  Link,  
+  Link,
+  Speakerphone,
+  Megaphone,  
 } from "lucide-react";
 
 export default function AdminLayout({
@@ -169,6 +171,10 @@ export default function AdminLayout({
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/users" icon={<Users size={18} />}>
             Users
+          </NavItem>
+
+          <NavItem collapsed={sidebarCollapsed} href="/admin/marketing" icon={<Megaphone size={18} />}>
+            Marketing
           </NavItem>
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/settings" icon={<Settings size={18} />}>

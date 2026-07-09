@@ -2,9 +2,11 @@ import { NextResponse } from "next/server"
 import { getAvailableTools, runTool } from "@/lib/tools/runner"
 
 export async function GET() {
+  const tools = await getAvailableTools()
+
   return NextResponse.json({
     success: true,
-    tools: getAvailableTools(),
+    tools,
   })
 }
 

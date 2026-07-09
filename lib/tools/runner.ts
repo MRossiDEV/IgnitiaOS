@@ -1,4 +1,4 @@
-import { tools } from "./registry"
+import type { Tool } from "./types"
 
 export interface ToolExecutionResult {
   success: boolean
@@ -8,6 +8,18 @@ export interface ToolExecutionResult {
   duration: number
 }
 
+let cachedTools: Record<string, Tool> | null = null
+
+async function getTools(): Promise<Record<string, Tool>> {
+  if (cachedTools) {
+    return cachedTools
+  }
+
+  const { tools } = await import("./registry")
+  cachedTools = tools
+  return cachedTools
+}
+
 export async function runTool(
   toolName: string,
   input: Record<string, any> = {}
@@ -15,6 +27,7 @@ export async function runTool(
   const startTime = Date.now()
 
   try {
+    const tools = await getTools()
     const tool = tools[toolName]
 
     if (!tool) {
@@ -84,7 +97,9 @@ export async function runTools(
 /**
  * Get available tools for agents
  */
-export function getAvailableTools() {
+export async function getAvailableTools() {
+  const tools = await getTools()
+
   return Object.entries(tools).map(([id, tool]) => ({
     id,
     name: tool.name,
@@ -95,6 +110,7 @@ export function getAvailableTools() {
 /**
  * Check if a tool exists
  */
-export function hasTool(toolName: string): boolean {
+export async function hasTool(toolName: string): Promise<boolean> {
+  const tools = await getTools()
   return !!tools[toolName]
 }

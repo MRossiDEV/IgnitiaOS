@@ -2,6 +2,8 @@ import { searchLeads } from "./tools/searchLeads"
 import { createLead } from "./tools/createLead"
 import { sendEmail } from "./tools/sendEmail"
 import { websiteAudit } from "./tools/websiteAudit"
+import { instagramPublisher } from "./tools/instagramPublisher"
+import { socialPublisher } from "./tools/socialPublisher"
 import { agencyOsTools } from "./tools/agencyOs"
 import { WebsiteIntelligenceTool } from "./website-intelligence"
 import { BackgroundRemoval, ImageGeneration, ImageEditing, Upscaler, VideoGeneration } from "./media"
@@ -35,6 +37,8 @@ export const tools = {
   create_lead: createLead,
   send_email: sendEmail,
   website_audit: websiteAudit,
+  instagram_publisher: instagramPublisher,
+  social_publisher: socialPublisher,
   website_intelligence: WebsiteIntelligenceTool,
   research_tool: ResearchTool,
   google_search: GoogleSearch,
