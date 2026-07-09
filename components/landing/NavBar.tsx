@@ -30,9 +30,9 @@ export default function NavBar() {
 
           <button 
             onClick={() => document.getElementById('audit')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-2xl bg-white text-black px-7 py-3 font-semibold hover:bg-cyan-400 transition"
+            className="rounded-xl bg-blue-500 text-black px-2 py-3 font-semibold hover:bg-blue-200 transition"
           >
-            Free Growth Audit
+            Auditotia GRATIS
           </button>
         </div>
       </nav >
