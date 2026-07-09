@@ -3,6 +3,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 
 export default function NavBar() {
@@ -28,12 +29,13 @@ export default function NavBar() {
             <a href="#faq" className="hover:text-cyan-400 transition">FAQ</a>
           </div>
 
-          <button 
-            onClick={() => document.getElementById('audit')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-xl bg-blue-500 text-black px-2 py-3 font-semibold hover:bg-blue-200 transition"
-          >
-            Auditotia GRATIS
-          </button>
+          <Link
+                href="/report-wizard"
+                className="group inline-flex items-center justify-center rounded-xl bg-blue-600 px-4 py-4 text-base font-semibold transition-all hover:bg-blue-500"
+            >
+               Reporte Gratis
+
+            </Link>
         </div>
       </nav >
     );

@@ -1,138 +1,103 @@
-
 "use client";
 
-import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  CheckCircle2,
-  Sparkles,
-} from "lucide-react";
+import Link from "next/link";
+import { ArrowRight, Play, CheckCircle } from "lucide-react";
 
 export default function Hero() {
   return (
-    <section className="relative overflow-hidden">
-        <div className="relative mx-auto max-w-7xl">
-            <div className="grid lg:grid-cols-2 gap-20 p-4 items-center">
-                <motion.div
-                initial={{opacity:0,y:40}}
-                animate={{opacity:1,y:0}}
-                >
+    <section className="relative isolate overflow-hidden">
+      {/* Fondo */}
+      <div className="absolute inset-0 bg-[#09090B]" />
 
-                <div className="inline-flex text-sm items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-5 py-2 text-blue-300">
-                    <Sparkles size={12}/>
-                    TU DEPARTAMENTO EXTERNO DE CRECIMIENTO
-                </div>
-                      
-                <div className="flex items-center max-w-[400px] gap-3">
-                    <img
-                        src="/images/brand/logo.png"
-                        className="mt-8 h-auto w-full"
-                    />              
-                </div>
+      <div className="absolute left-1/2 top-0 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-blue-600/10 blur-[180px]" />
 
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.12),transparent_60%)]" />
 
+      {/* Cuadrícula */}
+      <div className="absolute inset-0 opacity-[0.05]">
+        <div
+          className="h-full w-full"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(255,255,255,.08) 1px, transparent 1px),
+              linear-gradient(90deg, rgba(255,255,255,.08) 1px, transparent 1px)
+            `,
+            backgroundSize: "40px 40px",
+          }}
+        />
+      </div>
 
-                <h1 className="mt-8 text-4xl md:text-4xl font-black leading-[1.05]">
-                    Construimos
-                    <br/>
-                    <span className="text-blue-500">
-                    tu sistema
-                    </span>
-                    <br/>
-                    de crecimiento.
-                </h1>
+      <div className="relative mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-center px-6 pt-32 pb-24 text-center">
 
-                <p className="mt-8 max-w-xl text-xl text-zinc-400 leading-9">
-                    Ignitia AI, actúa como tu equipo completo de crecimiento.
-                    Generamos clientes potenciales, desarrollamos sitios web,
-                    automatizamos procesos, implementamos IA y optimizamos tu negocio
-                    para que tú puedas concentrarte en vender.
-                </p>
+        {/* Badge */}
+        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-zinc-300 backdrop-blur">
+        <span className="h-2 w-2 rounded-full bg-blue-500" />
+        Servicios Empresariales Impulsados por Inteligencia Artificial
+        </div>
 
-                <div className="mt-10 flex flex-wrap gap-5">
-                    <button className="rounded-2xl bg-blue-600 px-8 py-5 font-bold hover:bg-blue-500 flex items-center gap-3">
-                    Solicitar Auditoría Gratuita
+        {/* Heading */}
+        <h1 className="max-w-5xl text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl">
+        Impulsamos el crecimiento
+        <br />
+        de tu empresa con
+        <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
+            {" "}
+            Inteligencia Artificial
+        </span>
+        </h1>
 
-                    <ArrowRight/>
+        {/* Description */}
+        <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400 md:text-xl">
+        Auditorías SEO, optimización web, análisis de competencia,
+        estrategias de contenido y automatización de procesos para ayudar
+        a tu empresa a crecer con soluciones impulsadas por Inteligencia Artificial.
+        </p>
 
-                    </button>
-                </div>
+        {/* CTA */}
+        <div className="mt-12 flex flex-col gap-4 sm:flex-row">
+        <Link
+            href="/report-wizard"
+            className="group inline-flex items-center justify-center rounded-xl bg-blue-600 px-7 py-4 text-base font-semibold transition-all hover:bg-blue-500"
+        >
+            Obtener Análisis Inteligente Gratuito
 
-                <div className="mt-12 grid grid-cols-2 gap-5 text-sm">
+            <ArrowRight
+            className="ml-2 transition-transform group-hover:translate-x-1"
+            size={18}
+            />
+        </Link>
 
-                    <div className="flex items-center gap-2">
-                    <CheckCircle2 className="text-blue-400"/>
-                    Nosotros hacemos el trabajo
-                    </div>
+        <Link
+            href="/demo-report"
+            className="inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-7 py-4 text-base font-medium text-white backdrop-blur transition hover:border-white/20 hover:bg-white/10"
+        >
+            <Play className="mr-2" size={18} />
+            Ver Reporte de Ejemplo
+        </Link>
+        </div>
 
-                    <div className="flex items-center gap-2">
-                    <CheckCircle2 className="text-blue-400"/>
-                    Tú obtienes resultados
-                    </div>
+        {/* Trust */}
+        <div className="mt-16 flex flex-wrap items-center justify-center gap-8 text-sm text-zinc-400">
+        <div className="flex items-center gap-2">
+            <CheckCircle size={18} className="text-green-500" />
+            Auditorías SEO
+        </div>
 
-                    <div className="flex items-center gap-2">
-                    <CheckCircle2 className="text-blue-400"/>
-                    IA + Automatización
-                    </div>
+        <div className="flex items-center gap-2">
+            <CheckCircle size={18} className="text-green-500" />
+            Optimización Web
+        </div>
 
-                    <div className="flex items-center gap-2">
-                    <CheckCircle2 className="text-blue-400"/>
-                    Equipo multidisciplinario
-                    </div>
+        <div className="flex items-center gap-2">
+            <CheckCircle size={18} className="text-green-500" />
+            Estrategias de Contenido
+        </div>
 
-                </div>
-
-                </motion.div>
-
-                <motion.div
-                initial={{opacity:0,scale:.95}}
-                animate={{opacity:1,scale:1}}
-                >
-
-                <div className="rounded-[30px] border border-blue-500/20 bg-white/5 backdrop-blur-xl p-8">
-
-                    <h3 className="text-3xl font-bold">
-                        Auditoría Gratuita
-                    </h3>
-
-                    <p className="mt-3 text-zinc-400">
-                        Analizamos tu presencia online, y te mostramos exactamente dónde estás perdiendo de generar potenciales ganancias, y cómo llegar a más clientes.
-                    </p>
-
-                    <div className="space-y-5 mt-8">
-
-                    <input
-                        placeholder="Nombre"
-                        className="w-full rounded-2xl border border-white/10 bg-black/30 px-5 py-4 outline-none focus:border-blue-500"
-                    />
-
-                    <input
-                        placeholder="Empresa"
-                        className="w-full rounded-2xl border border-white/10 bg-black/30 px-5 py-4 outline-none focus:border-blue-500"
-                    />
-
-                    <input
-                        placeholder="Email"
-                        className="w-full rounded-2xl border border-white/10 bg-black/30 px-5 py-4 outline-none focus:border-blue-500"
-                    />
-
-                    <input
-                        placeholder="Sitio Web"
-                        className="w-full rounded-2xl border border-white/10 bg-black/30 px-5 py-4 outline-none focus:border-blue-500"
-                    />
-
-                    <button className="w-full rounded-2xl bg-gradient-to-r from-blue-600 to-cyan-500 py-5 font-bold">
-
-                        Solicitar Auditoría →
-
-                    </button>
-
-                    </div>
-
-                </div>
-
-                </motion.div>
-            </div>
+        <div className="flex items-center gap-2">
+            <CheckCircle size={18} className="text-green-500" />
+            Automatización Empresarial
+        </div>
+              </div>
         </div>
     </section>
   );

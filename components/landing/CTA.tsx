@@ -1,51 +1,56 @@
-"use client";
+import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
 
+export default function FinalCTA() {
+  return (
+    <section className="relative overflow-hidden py-32">
 
+      <div className="absolute inset-0 bg-[#0B1020]" />
 
+      <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-600/15 blur-[150px]" />
 
+      <div className="relative mx-auto max-w-5xl px-6">
 
+        <div className="rounded-[32px] border border-white/10 bg-white/[0.03] px-8 py-16 text-center backdrop-blur-xl md:px-16">
 
-export default function CTA() {
-    return (
-        <section className="py-32">
-        <div className="max-w-6xl mx-auto px-6">
-            <div className="relative overflow-hidden rounded-[40px] border border-cyan-500/20 bg-gradient-to-br from-cyan-500/10 via-zinc-950 to-black p-20 text-center">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(6,182,212,0.15),transparent_60%)]" />
+            <h2 className="text-4xl font-bold text-white md:text-6xl">
+            Descubre qué está frenando el crecimiento de tu negocio.
+            </h2>
 
-            <div className="relative">
-                <h2 className="text-6xl font-black leading-tight">
-                Ready To Grow
-                <br />
-                Your Business?
-                </h2>
+            <p className="mx-auto mt-8 max-w-3xl text-lg leading-8 text-zinc-400">
+            Obtén un reporte gratuito generado por Inteligencia Artificial con un análisis
+            inicial de tu empresa, oportunidades de mejora y recomendaciones
+            personalizadas. Sin costo y sin compromiso.
+            </p>
 
-                <p className="mt-8 max-w-2xl mx-auto text-xl text-zinc-400">
-                Let's identify the fastest path to more leads,
-                more appointments and more revenue.
-                </p>
+            <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
 
-                <div className="mt-12 flex flex-wrap justify-center gap-5">
-                <button
-                    onClick={() =>
-                    document
-                        .getElementById("audit")
-                        ?.scrollIntoView({
-                        behavior: "smooth",
-                        })
-                    }
-                    className="rounded-2xl bg-cyan-500 px-10 py-5 text-black font-bold text-lg"
-                >
-                    Get Free Growth Audit
-                </button>
+            <Link
+                href="/report-wizard"
+                className="group inline-flex items-center rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold transition hover:bg-blue-500"
+            >
+                Obtener Reporte Gratuito
 
-                <button className="rounded-2xl border border-white/20 px-10 py-5 text-lg">
-                    Book Strategy Call
-                </button>
-                </div>
+                <ArrowRight
+                className="ml-2 transition-transform group-hover:translate-x-1"
+                size={20}
+                />
+
+            </Link>
+
+            <Link
+                href="/demo-report"
+                className="inline-flex items-center rounded-xl border border-white/10 bg-white/5 px-8 py-4 text-lg font-medium text-white transition hover:border-white/20 hover:bg-white/10"
+            >
+                Ver Reporte de Ejemplo
+            </Link>
+
             </div>
-            </div>
+
         </div>
-        </section>
-            
-    )
+
+      </div>
+
+    </section>
+  );
 }
