@@ -120,7 +120,7 @@ export default function NavBar() {
             >
               <Sparkles size={18} />
 
-              Obtener Análisis Gratuito
+              Análisis Inteligente Gratuito
 
               <ArrowRight size={18} />
             </Link>

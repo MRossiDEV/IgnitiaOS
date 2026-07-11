@@ -60,13 +60,11 @@ export default function Services() {
           </span>
 
           <h2 className="mt-6 text-4xl font-bold md:text-5xl">
-            Todo lo que necesitas para impulsar tu negocio.
+            Todo lo que necesitas para potenciar tu presencia online.
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-zinc-400">
-            Cada servicio está diseñado para resolver un problema específico y
-            generar resultados medibles. Puedes contratar un servicio puntual o
-            una estrategia completa adaptada a tu empresa.
+            Desde auditorías y optimización SEO hasta automatización y estrategias digitales, adaptamos nuestros servicios a empresas, profesionales y marcas personales.
           </p>
 
         </div>

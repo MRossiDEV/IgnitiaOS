@@ -8,13 +8,13 @@ import {
 const steps = [
   {
     icon: Globe,
-    title: "1. Cuéntanos sobre tu negocio",
+    title: "1. Cuéntanos sobre tu negocio o marca personal.",
     description:
       "Completa un breve formulario con tu sitio web, objetivos y necesidades.",
   },
   {
     icon: BrainCircuit,
-    title: "2. Analizamos tu empresa",
+    title: "2. Analizamos tu presencia digital.",
     description:
       "Nuestros sistemas de IA realizan un análisis completo de tu presencia digital y detectan oportunidades de mejora.",
   },

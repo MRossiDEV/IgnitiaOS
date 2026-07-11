@@ -48,13 +48,11 @@ export default function TrustSection() {
           </div>
 
           <h2 className="text-4xl font-bold text-white md:text-5xl">
-            Servicios diseñados para generar resultados reales.
+            Soluciones diseñadas para hacer crecer tu presencia digital.
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-zinc-400">
-            Combinamos Inteligencia Artificial con metodologías profesionales
-            para ayudarte a mejorar tu presencia digital, optimizar procesos y
-            descubrir nuevas oportunidades de crecimiento.
+            Ayudamos a empresas, profesionales y marcas personales a mejorar su visibilidad, optimizar su presencia online y convertir más visitantes en clientes.
           </p>
 
         </div>

@@ -62,9 +62,7 @@ export default function WhyIgnitia() {
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-zinc-400">
-            Nuestro objetivo es ayudarte a tomar mejores decisiones, optimizar
-            recursos y acelerar el crecimiento de tu empresa con soluciones
-            impulsadas por Inteligencia Artificial.
+            Trabajamos junto a empresas, profesionales independientes y marcas personales para identificar oportunidades, mejorar su presencia digital y acelerar su crecimiento.
           </p>
 
         </div>

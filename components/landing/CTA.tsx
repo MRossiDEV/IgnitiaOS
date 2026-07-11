@@ -14,13 +14,13 @@ export default function FinalCTA() {
         <div className="rounded-[32px] border border-white/10 bg-white/[0.03] px-8 py-16 text-center backdrop-blur-xl md:px-16">
 
             <h2 className="text-4xl font-bold text-white md:text-6xl">
-            Descubre qué está frenando el crecimiento de tu negocio.
+            Descubre qué está <span className="text-blue-400">frenando el crecimiento</span> de tu negocio o marca profesional, y cuánto estás <span className="text-blue-400">dejando de ganar</span>.
             </h2>
 
             <p className="mx-auto mt-8 max-w-3xl text-lg leading-8 text-zinc-400">
-            Obtén un reporte gratuito generado por Inteligencia Artificial con un análisis
-            inicial de tu empresa, oportunidades de mejora y recomendaciones
-            personalizadas. Sin costo y sin compromiso.
+            Obtén un Análisis Inteligente Gratuito de tu sitio web o marca profesional.
+            <br />            
+            Descubre qué oportunidades podrían ayudarte a atraer más clientes, aumentar tus ventas y acelerar el crecimiento de tu negocio o marca profesional, sin costo y sin compromiso.
             </p>
 
             <div className="mt-12 flex flex-col items-center justify-center gap-4 sm:flex-row">
@@ -29,7 +29,7 @@ export default function FinalCTA() {
                 href="/report-wizard"
                 className="group inline-flex items-center rounded-xl bg-blue-600 px-8 py-4 text-lg font-semibold transition hover:bg-blue-500"
             >
-                Obtener Reporte Gratuito
+                Obtener Análisis Gratuito
 
                 <ArrowRight
                 className="ml-2 transition-transform group-hover:translate-x-1"

@@ -39,18 +39,18 @@ export default function Hero() {
         <h1 className="max-w-5xl text-5xl font-bold leading-tight tracking-tight text-white md:text-7xl">
         Impulsamos el crecimiento
         <br />
-        de tu empresa con
-        <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">
-            {" "}
-            Inteligencia Artificial
+          de tu empresa o marca profesional con soluciones de 
+          <br />
+        <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">          
+          Inteligencia Artificial
         </span>
         </h1>
 
         {/* Description */}
         <p className="mt-8 max-w-2xl text-lg leading-8 text-zinc-400 md:text-xl">
-        Auditorías SEO, optimización web, análisis de competencia,
-        estrategias de contenido y automatización de procesos para ayudar
-        a tu empresa a crecer con soluciones impulsadas por Inteligencia Artificial.
+          Convierte tu presencia digital en una máquina de generar clientes.
+          <br />
+          Analizamos tu presencia digital para descubrir oportunidades de crecimiento, mejorar tu posicionamiento y ayudarte a atraer más clientes mediante estrategias impulsadas por Inteligencia Artificial.
         </p>
 
         {/* CTA */}
