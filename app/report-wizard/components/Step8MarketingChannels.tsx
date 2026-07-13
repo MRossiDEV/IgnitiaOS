@@ -30,7 +30,7 @@ export default function Step8MarketingChannels() {
   const { data, update, next, previous } = useReportWizard();
 
   const [selected, setSelected] = useState<string[]>(
-    data.marketing || []
+    data.marketing_channels || []
   );
 
   function toggle(channel: string) {
@@ -44,7 +44,7 @@ export default function Step8MarketingChannels() {
 
   function continueStep() {
     update({
-      marketing: selected,
+      marketing_channels: selected,
     });
 
     next();

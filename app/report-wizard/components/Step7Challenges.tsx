@@ -27,7 +27,7 @@ export default function Step7Challenges() {
   const { data, update, next, previous } = useReportWizard();
 
   const [selected, setSelected] = useState<string[]>(
-    data.problems || []
+    data.biggest_challenge || []
   );
 
   function toggle(option: string) {
@@ -43,7 +43,7 @@ export default function Step7Challenges() {
 
   function continueStep() {
     update({
-      problems: selected,
+      biggest_challenge: selected,
     });
 
     next();

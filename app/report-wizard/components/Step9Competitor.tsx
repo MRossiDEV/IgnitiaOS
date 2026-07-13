@@ -10,18 +10,82 @@ import {
 import { useReportWizard } from "../store";
 
 export default function Step9Competitor() {
-  const { data, update, next, previous } = useReportWizard();
+  const { data, update, next, previous, setReport } = useReportWizard();
+  const [competitor, setCompetitor] = useState(data.competitors); 
+  
+  async function continueStep() {
+    try {
+      const wizardData = {
+        ...data,
+        competitors: competitor,
+      };
 
-  const [competitor, setCompetitor] = useState(
-    data.competitor || ""
-  );
+      update({
+        competitors: competitor,
+      });
 
-  function continueStep() {
-    update({
-      competitor: competitor.trim(),
-    });
+      console.log("wizardData", wizardData);
 
-    next();
+
+      const response = await fetch("/api/v1/reports/free", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(wizardData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start report");
+      }
+
+      const report = await response.json();
+
+
+
+      next();
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  // SKIP 
+  async function skipStep() {
+    try {
+      const wizardData = {
+        ...data,
+        competitors: competitor,
+      };
+
+      update({
+        competitors: "No conozco mi competencia",
+      });
+
+      const response = await fetch("/api/v1/reports/free/start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(wizardData),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to start report");
+      }
+
+      const report = await response.json();
+
+      setReport(
+        report.reportId,
+        report.accessCode
+      );
+
+      next();
+
+    } catch (err) {
+      console.error(err);
+    }
   }
 
   return (
@@ -100,7 +164,7 @@ export default function Step9Competitor() {
       {/* Skip */}
 
       <button
-        onClick={continueStep}
+        onClick={skipStep}
         className="mt-6 text-left text-sm font-medium text-blue-400 transition hover:text-blue-300"
       >
         No conozco a mi competencia →

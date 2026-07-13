@@ -29,7 +29,7 @@ export default function Step3Website() {
 
   function skipWebsite() {
     update({
-      website: "",
+      website: "none",
     });
 
     next();

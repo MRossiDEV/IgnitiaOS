@@ -11,8 +11,10 @@ import {
 
 import { useReportWizard } from "../store";
 
+
+
 const findings = [
-  "Encontramos 27 oportunidades potenciales de mejora.",
+  "Encontramos varias oportunidades potenciales de mejora.",
   "Detectamos varios puntos de fricción que podrían estar reduciendo tus consultas.",
   "Identificamos oportunidades de posicionamiento que actualmente no estás aprovechando.",
   "Encontramos áreas donde tu competencia podría estar captando clientes antes que tú.",
@@ -21,6 +23,10 @@ const findings = [
 
 export default function Step11Teaser() {
   const { next } = useReportWizard();
+
+  const { data } = useReportWizard();
+  
+  // console.log(data);
 
   return (
     <div className="flex min-h-screen flex-col px-6 py-8">
@@ -98,7 +104,7 @@ export default function Step11Teaser() {
 
       {/* Locked */}
 
-      <div className="mt-8 rounded-3xl border border-amber-500/20 bg-amber-500/5 p-6">
+      {/* <div className="mt-8 rounded-3xl border border-amber-500/20 bg-amber-500/5 p-6">
 
         <div className="flex items-center gap-3">
 
@@ -157,7 +163,7 @@ export default function Step11Teaser() {
 
         </div>
 
-      </div>
+      </div> */}
 
       {/* CTA */}
 
@@ -168,7 +174,7 @@ export default function Step11Teaser() {
           className="flex h-16 w-full items-center justify-center rounded-2xl bg-blue-600 text-lg font-semibold transition hover:bg-blue-500 active:scale-[0.99]"
         >
 
-          Desbloquear mi reporte
+          Ver mi reporte
 
           <ArrowRight
             size={20}

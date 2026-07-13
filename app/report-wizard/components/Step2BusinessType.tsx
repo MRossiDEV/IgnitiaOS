@@ -1,57 +1,49 @@
 "use client";
 
+import { useState } from "react";
 import {
   Briefcase,
   Building2,
-  Globe,
-  Scale,
+  Globe,  
   ShoppingBag,
-  Stethoscope,
 } from "lucide-react";
 
 import { useReportWizard } from "../store";
 
 const options = [
   {
-    title: "Empresa",
+    title: "Tengo una Empresa",
     value: "Empresa",
     icon: Building2,
     description: "PyME, empresa o negocio establecido.",
   },
   {
-    title: "Profesional Independiente",
+    title: "Soy Profesional Independiente",
     value: "Profesional",
     icon: Briefcase,
     description: "Abogado, médico, arquitecto, contador, etc.",
   },
   {
-    title: "Negocio Local",
+    title: "Tengo un Negocio Local",
     value: "Negocio Local",
     icon: Globe,
-    description: "Restaurante, clínica, gimnasio, comercio, etc.",
+    description: "Restaurante, gimnasio, tienda, etc.",
   },
   {
-    title: "Tienda Online",
+    title: "Tengo una Tienda Online",
     value: "Ecommerce",
     icon: ShoppingBag,
     description: "Venta de productos por internet.",
   },
-  {
-    title: "Despacho / Estudio",
-    value: "Estudio",
-    icon: Scale,
-    description: "Consultoras, estudios jurídicos y oficinas.",
-  },
-  {
-    title: "Clínica / Centro de Salud",
-    value: "Clínica",
-    icon: Stethoscope,
-    description: "Consultorios, odontología y salud.",
-  },
 ];
 
 export default function Step2BusinessType() {
-  const { update, next } = useReportWizard();
+  const { data, update, next } = useReportWizard();
+
+  const [form, setForm] = useState({
+    businessType: data.businessType,
+
+  });
 
   function select(option: string) {
     update({
@@ -60,6 +52,7 @@ export default function Step2BusinessType() {
 
     setTimeout(next, 200);
   }
+  
 
   return (
     <div className="flex flex-1 flex-col px-6 py-8">
@@ -71,7 +64,7 @@ export default function Step2BusinessType() {
         </span>
 
         <h1 className="mt-5 text-3xl font-bold leading-tight">
-          ¿Qué tipo de negocio quieres analizar?
+          ¿Qué tipo de negocio tienes?
         </h1>
 
         <p className="mt-3 text-zinc-400 leading-7">

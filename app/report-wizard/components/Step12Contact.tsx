@@ -29,7 +29,7 @@ export default function Step12Contact() {
     fullName: data.fullName,
     email: data.email,
     phone: data.phone,
-    company: data.businessName || data.company,
+    company: data.businessName,
     receiveTips: data.receiveTips,
   });
 

@@ -1,6 +1,7 @@
 import Hero from "./Hero";
 import Opportunity from "./Opportunity";
 import EarningsCalculator from "./EarningsCalculator";
+import IdealClients from "./IdealClients";
 import ServicesGrid from "./ServicesGrid";
 import HowItWorks from "./HowItWorks";
 import PartnerLevels from "./PartnerLevels";
@@ -13,24 +14,17 @@ export default function AffiliatePage() {
   return (
     <main className="bg-black text-white">
 
-      <Hero />
-
-      <Opportunity />
-
-      <EarningsCalculator />
-
-      <ServicesGrid />
-
-      <HowItWorks />
-
-      <PartnerLevels />
-
-      <ComparisonTable />
-
-      <FAQ />
-
-      <CTA />
-
+        <Hero />
+        <Opportunity />
+        <EarningsCalculator />
+        <IdealClients />
+        <ServicesGrid />
+        <HowItWorks />
+        <PartnerLevels />
+        <ComparisonTable />
+        <FAQ />
+        <CTA />
+          
     </main>
   );
 }

@@ -5,11 +5,8 @@ import { ReportWizardData } from "./types";
 
 interface WizardStore {
   step: number;
-
   reportId: string;
-
   accessCode: string;
-
   data: ReportWizardData;
 
   next: () => void;
@@ -27,35 +24,50 @@ interface WizardStore {
 }
 
 const initialData: ReportWizardData = {
+  reportCode: "",
+  accessCode: "",
+  status: "new",
+  created_at: "",
+  updated_at: "",
+  viewed_at: null,
+  viewed_count: 0,
+  expires_at: "30 days",
   businessType: "",
   website: "",
   businessName: "",
-  category: "",
+  businessSize: "",
   city: "",
   country: "",
-  goal: "",
+  primary_goal: "",
   industry: "",
-  problems: [],
-  revenue: "",
-  teamSize: "",
+  biggest_challenge: [],
+  marketing_channels: [],
+  competitors: "",
+  ai_summary: "",
+  overall_score: 0,
+  google_score: 0,
+  social_score: 0,
+  conversion_score: 0,
+  strengths: [],
+  opportunities: [],
+  quick_wins: [],
+  executive_score: 0,
+  executive_preview: [],
+  recommended_services: [],
+  estimated_growth: "",
+  metadata: [],
 
+  // Contact
   fullName: "",
   email: "",
-  phone: "",
-  company: "",
+  phone: "",  
   receiveTips: false,
-
-  marketing: [],
-  competitor: "",
 };
 
 export const useReportWizard = create<WizardStore>((set) => ({
   step: 0,
-
   reportId: "",
-
   accessCode: "",
-
   data: initialData,
 
   next: () =>

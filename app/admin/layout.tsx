@@ -31,6 +31,7 @@ import {
   Speakerphone,
   Megaphone,  
 } from "lucide-react";
+import { Toaster } from "sonner";
 
 export default function AdminLayout({
   children,
@@ -77,6 +78,13 @@ export default function AdminLayout({
 
   return (
     <div className="admin-theme relative flex h-screen overflow-hidden bg-[#050505] text-white">
+        <Toaster
+          position="top-right"
+          richColors
+          expand
+          closeButton
+          duration={4000}
+        />
 
       {/* Global Background FX */}
       <BackgroundFX />
@@ -125,13 +133,17 @@ export default function AdminLayout({
             Command Center
           </NavItem>
 
+          <NavItem collapsed={sidebarCollapsed} href="/admin/my-leads" icon={<Database size={18} />}>
+            My Leads
+          </NavItem>
+
           <NavItem collapsed={sidebarCollapsed} href="/admin/reports" icon={<FileText size={18} />}>
             Reports
           </NavItem>
 
-          <NavItem collapsed={sidebarCollapsed} href="/admin/opportunities" icon={<Target size={18} />}>
+          {/* <NavItem collapsed={sidebarCollapsed} href="/admin/opportunities" icon={<Target size={18} />}>
             Opportunities
-          </NavItem>
+          </NavItem> */}
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/clients" icon={<Users size={18} />}>
             Clients
@@ -141,37 +153,37 @@ export default function AdminLayout({
             Leads Engine
           </NavItem>
           
-          <NavItem collapsed={sidebarCollapsed} href="/admin/promptstack" icon={<Server  size={18} />}>
+          {/* <NavItem collapsed={sidebarCollapsed} href="/admin/promptstack" icon={<Server  size={18} />}>
             PromptStack
-          </NavItem>
+          </NavItem> */}
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/campaigns" icon={<Rocket size={18} />}>
             Campaigns
           </NavItem>
 
-          <NavItem collapsed={sidebarCollapsed} href="/admin/funnels" icon={<Layers size={18} />}>
+          {/* <NavItem collapsed={sidebarCollapsed} href="/admin/funnels" icon={<Layers size={18} />}>
             Funnels
-          </NavItem>
+          </NavItem> */}
 
-          <NavItem collapsed={sidebarCollapsed} href="/admin/landing-pages" icon={<Globe size={18} />}>
+          {/* <NavItem collapsed={sidebarCollapsed} href="/admin/landing-pages" icon={<Globe size={18} />}>
             Landing Pages
-          </NavItem>
+          </NavItem> */}
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/agents" icon={<Brain size={18} />}>
             AI Agents
           </NavItem>
 
-          <NavItem collapsed={sidebarCollapsed} href="/admin/analytics" icon={<LineChart size={18} />}>
+          {/* <NavItem collapsed={sidebarCollapsed} href="/admin/analytics" icon={<LineChart size={18} />}>
             Revenue Analytics
-          </NavItem>
+          </NavItem> */}
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/revenue" icon={<Wallet size={18} />}>
             Revenue
           </NavItem>
 
-          <NavItem collapsed={sidebarCollapsed} href="/admin/users" icon={<Users size={18} />}>
+          {/* <NavItem collapsed={sidebarCollapsed} href="/admin/users" icon={<Users size={18} />}>
             Users
-          </NavItem>
+          </NavItem> */}
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/marketing" icon={<Megaphone size={18} />}>
             Marketing

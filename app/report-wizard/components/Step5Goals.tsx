@@ -55,7 +55,7 @@ export default function Step5Goals() {
 
   function select(goal: string) {
     update({
-      goal: goal,
+      primary_goal: goal,
     });
 
     setTimeout(() => {

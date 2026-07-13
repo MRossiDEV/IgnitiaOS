@@ -11,7 +11,7 @@ import { useReportWizard } from "../store";
 
 const businessSizes = [
   "Solo yo",
-  "2 - 5 empleados",
+  "1 - 5 empleados",
   "6 - 20 empleados",
   "21 - 50 empleados",
   "Más de 50 empleados",
@@ -21,11 +21,10 @@ export default function Step4BusinessInfo() {
   const { data, update, next, previous } = useReportWizard();
 
   const [form, setForm] = useState({
-    businessName: data.businessName,
-    category: data.category,
+    businessName: data.businessName,    
     city: data.city,
     country: data.country,
-    teamSize: data.teamSize,
+    businessSize: data.businessSize,
   });
 
   function updateField(field: string, value: string) {
@@ -41,11 +40,10 @@ export default function Step4BusinessInfo() {
   }
 
   const canContinue =
-    form.businessName.trim() &&
-    form.category.trim() &&
+    form.businessName.trim() &&    
     form.city.trim() &&
     form.country.trim() &&
-    form.teamSize;
+    form.businessSize;
 
   return (
     <div className="flex min-h-screen flex-col px-6 py-8">
@@ -96,22 +94,7 @@ export default function Step4BusinessInfo() {
 
         </div>
 
-        <div>
 
-          <label className="mb-2 block text-sm text-zinc-500">
-            Rubro o actividad
-          </label>
-
-          <input
-            value={form.category}
-            onChange={(e) =>
-              updateField("category", e.target.value)
-            }
-            placeholder="Ej. Dentista, Arquitecto, Restaurante..."
-            className="h-16 w-full rounded-2xl border border-white/10 bg-white/[0.03] px-5 outline-none transition focus:border-blue-500"
-          />
-
-        </div>
 
         <div className="grid grid-cols-2 gap-4">
 
@@ -161,14 +144,14 @@ export default function Step4BusinessInfo() {
 
             {businessSizes.map((size) => {
 
-              const active = form.teamSize === size;
+              const active = form.businessSize === size;
 
               return (
 
                 <button
                   key={size}
                   type="button"
-                  onClick={() => updateField("teamSize", size)}
+                  onClick={() => updateField("businessSize", size)}
                   className={`flex items-center gap-3 rounded-2xl border p-4 text-left transition ${
                     active
                       ? "border-blue-500 bg-blue-500/10"

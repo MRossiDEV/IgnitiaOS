@@ -28,6 +28,8 @@ const tasks = [
 
 export default function Step10Loading() {
   const { next } = useReportWizard();
+  const { data } = useReportWizard();
+  // console.log(data);
 
   const [progress, setProgress] = useState(0);
 
