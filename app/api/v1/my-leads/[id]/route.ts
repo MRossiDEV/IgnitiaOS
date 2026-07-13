@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-
 import { supabaseAdmin } from "@/lib/supabase/server";
-import { sendEmail } from "@/lib/email/sendEmail";
-import { notify } from "@/app/admin/toasts-messages";
-
 
 interface RouteProps {
   params: Promise<{
@@ -11,14 +7,11 @@ interface RouteProps {
   }>;
 }
 
-
 export async function PATCH(
   request: NextRequest,
   { params }: RouteProps
 ) {
-
   try {
-
     const { id } = await params;
     const body = await request.json();
     const {
@@ -38,8 +31,6 @@ export async function PATCH(
       tags,
       activity,
     } = body;
-
-
 
     const payload = {
       report_id: id,
@@ -107,18 +98,11 @@ export async function PATCH(
           .select()
           .single();
       
-      await sendEmail({
-        to: "mrossiph@gmail.com",
-        subject: "Toma pa Bo",
-        html: "<h1>Jelows from IgnitiaAI</h1>",
-      });
-      
-      console.log("Email SENT successfully");
+
       
 
       
-    } else {
-      console.log("Email ABOUT TO SEND successfullyyyyyyyyyy");
+    } else {      
       result =
         await supabaseAdmin
           .from("lead_crm")
