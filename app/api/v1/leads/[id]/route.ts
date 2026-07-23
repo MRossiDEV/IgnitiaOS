@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabaseAdmin } from "@/lib/supabase/server"
-import { LeadStatus, LeadPriority } from "@/lib/models/lead"
+import { LeadStatus, LeadPriority } from "@/lib/ai/models/lead"
 
 
 

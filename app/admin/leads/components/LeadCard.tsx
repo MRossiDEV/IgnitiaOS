@@ -1,6 +1,6 @@
 "use client"
 
-import { Lead } from "@/lib/models/lead"
+import { Lead } from "@/lib/ai/models/lead"
 import { useSortable } from "@dnd-kit/sortable"
 import { CSS } from "@dnd-kit/utilities"
 import { Badge } from "@/components/ui/badge"

@@ -1,4 +1,4 @@
-import type { InstagramDraftSummary } from "@/lib/marketing/marketing-page-config";
+import type { InstagramDraftSummary } from "@/lib/ai/tools/marketing/marketing-page-config";
 
 type PublisherDraftsTableProps = {
   drafts: InstagramDraftSummary[];

@@ -26,8 +26,8 @@ import {
 } from '@/components/ui/select'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AlertCircle, Loader2 } from 'lucide-react'
-import type { User, CreateUserInput, UpdateUserInput, UserRole, UserStatus } from '@/lib/models/user'
-import { ROLE_LABELS, ROLE_DESCRIPTIONS, STATUS_LABELS } from '@/lib/models/user'
+import type { User, CreateUserInput, UpdateUserInput, UserRole, UserStatus } from '@/lib/ai/models/user'
+import { ROLE_LABELS, ROLE_DESCRIPTIONS, STATUS_LABELS } from '@/lib/ai/models/user'
 
 interface UserFormModalProps {
   open: boolean

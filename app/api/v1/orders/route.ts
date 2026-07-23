@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { createOrder, listOrders, updateOrderStatus, updateOrderPaymentStatus, getOrderAnalytics } from '@/lib/supabase/orders'
 import { createWorkflow } from '@/lib/supabase/workflows'
-import { WORKFLOW_TEMPLATES } from '@/lib/models/workflow'
+import { WORKFLOW_TEMPLATES } from '@/lib/ai/models/workflow'
 
 /**
  * POST /api/orders

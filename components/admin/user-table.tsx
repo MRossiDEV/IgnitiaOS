@@ -32,8 +32,8 @@ import {
 import { MoreHorizontal, Edit, Trash2, Shield } from 'lucide-react'
 import { format } from 'date-fns'
 
-import type { User } from '@/lib/models/user'
-import { ROLE_LABELS, STATUS_LABELS } from '@/lib/models/user'
+import type { User } from '@/lib/ai/models/user'
+import { ROLE_LABELS, STATUS_LABELS } from '@/lib/ai/models/user'
 
 interface UserTableProps {
   users: User[]

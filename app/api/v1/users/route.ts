@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import type { CreateUserInput } from '@/lib/models/user'
+import type { CreateUserInput } from '@/lib/ai/models/user'
 
 export async function GET(request: NextRequest) {
   try {

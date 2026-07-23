@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import type { UpdateTemplateInput } from '@/lib/models/template'
+import type { UpdateTemplateInput } from '@/lib/ai/models/template'
 
 export const dynamic = 'force-dynamic'
 

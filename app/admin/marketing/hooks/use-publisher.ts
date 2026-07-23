@@ -9,7 +9,7 @@ import {
   type PublisherAction,
   type PublisherMediaType,
   type SocialAccount,
-} from "@/lib/marketing/marketing-page-config";
+} from "@/lib/ai/tools/marketing/marketing-page-config";
 
 export function usePublisher(selectedAccount: SocialAccount | undefined) {
   const [publisherAction, setPublisherAction] =

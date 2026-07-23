@@ -26,8 +26,8 @@ import { Badge } from '@/components/ui/badge'
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog'
 import { MoreHorizontal, Edit, Trash2, Eye } from 'lucide-react'
 import { format } from 'date-fns'
-import type { Template } from '@/lib/models/template'
-import { TEMPLATE_TYPE_LABELS } from '@/lib/models/template'
+import type { Template } from '@/lib/ai/models/template'
+import { TEMPLATE_TYPE_LABELS } from '@/lib/ai/models/template'
 
 interface TemplateTableProps {
   templates: Template[]

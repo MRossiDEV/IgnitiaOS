@@ -4,8 +4,8 @@
  */
 
 import { supabaseAdmin } from './server'
-import { Order, OrderStatus, PaymentStatus } from '@/lib/models/order'
-import { OfferType } from '@/lib/models/offer'
+import { Order, OrderStatus, PaymentStatus } from '@/lib/ai/models/order'
+import { OfferType } from '@/lib/ai/models/offer'
 
 /**
  * Create a new order

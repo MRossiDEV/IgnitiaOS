@@ -19,10 +19,30 @@ import {
 
 type AgentTier = "basic" | "pro" | "full";
 type Agent = {
+  // Registry task id sent to the API (e.g. "analyst.seo").
+  id: string;
   name: string;
+  description: string;
   tier: AgentTier;
   cost: number;
 };
+
+// Mirrors SPECIALIST_CATALOG in lib/ai/pipeline/custom-report.ts.
+// The server re-validates these ids before running anything.
+const AGENTS: Agent[] = [
+  { id: "analyst.seo", name: "SEO", description: "Titles, meta, headings, schema, links.", tier: "basic", cost: 1 },
+  { id: "analyst.ux", name: "User Experience", description: "Usability, navigation, layout.", tier: "basic", cost: 1 },
+  { id: "analyst.content", name: "Content", description: "Content depth, clarity, messaging.", tier: "basic", cost: 1 },
+  { id: "analyst.branding", name: "Branding", description: "Positioning and visual identity cues.", tier: "basic", cost: 1 },
+  { id: "analyst.copywriting", name: "Copywriting", description: "Headlines, value prop, persuasion.", tier: "basic", cost: 1 },
+  { id: "analyst.conversion", name: "Conversion", description: "CTAs, funnels, conversion friction.", tier: "pro", cost: 3 },
+  { id: "analyst.trust", name: "Trust", description: "Proof, guarantees, contact, security.", tier: "pro", cost: 3 },
+  { id: "analyst.accessibility", name: "Accessibility", description: "Assistive-technology accessibility.", tier: "pro", cost: 3 },
+  { id: "analyst.social", name: "Social Media", description: "Public social presence from the site.", tier: "pro", cost: 3 },
+  { id: "analyst.google", name: "Google Business", description: "Google Business Profile completeness.", tier: "pro", cost: 3 },
+  { id: "analyst.reputation", name: "Reputation", description: "Review rating and volume signals.", tier: "full", cost: 5 },
+  { id: "analyst.competitors", name: "Competitors", description: "Comparison vs competitor websites.", tier: "full", cost: 5 },
+];
 
 export default function NewReportPage() {
   const router = useRouter();
@@ -52,22 +72,11 @@ export default function NewReportPage() {
     notes: "",
   });
 
-  const AGENTS: Agent[] = [
-    { name: "Website Crawler", tier: "basic", cost: 1 },
-    { name: "Google Business", tier: "basic", cost: 1 },
-    { name: "Social Media", tier: "basic", cost: 1 },
-    { name: "Branding", tier: "basic", cost: 1 },
-    { name: "Report Builder", tier: "basic", cost: 2 },
-    { name: "SEO Auditor", tier: "pro", cost: 3 },
-    { name: "Conversion", tier: "pro", cost: 3 },
-    { name: "Lead Generation", tier: "pro", cost: 3 },
-    { name: "Growth Strategist", tier: "pro", cost: 4 },
-    { name: "Website Auditor", tier: "full", cost: 5 },
-    { name: "AI Opportunities", tier: "full", cost: 5 },
-    { name: "Proposal Generator", tier: "full", cost: 6 },
-  ];
-
-  const [selectedAgents, setSelectedAgents] = useState<string[]>([]);
+  const [selectedAgents, setSelectedAgents] = useState<string[]>([
+    "analyst.seo",
+    "analyst.ux",
+    "analyst.content",
+  ]);
 
   const groupedAgents = {
     basic: AGENTS.filter((a) => a.tier === "basic"),
@@ -117,16 +126,16 @@ export default function NewReportPage() {
     }));
   }
 
-  function toggleAgent(agent: string) {
+  function toggleAgent(agentId: string) {
     setSelectedAgents((prev) =>
-      prev.includes(agent)
-        ? prev.filter((a) => a !== agent)
-        : [...prev, agent]
+      prev.includes(agentId)
+        ? prev.filter((a) => a !== agentId)
+        : [...prev, agentId]
     );
   }
 
   function renderAgent(agent: Agent) {
-    const isSelected = selectedAgents.includes(agent.name);
+    const isSelected = selectedAgents.includes(agent.id);
 
     const tierColor =
       agent.tier === "basic"
@@ -137,25 +146,28 @@ export default function NewReportPage() {
 
     return (
       <button
-        key={agent.name}
+        key={agent.id}
         type="button"
-        onClick={() => toggleAgent(agent.name)}
-        className={`flex items-center justify-between rounded-xl border p-4 text-left transition ${tierColor} ${
+        onClick={() => toggleAgent(agent.id)}
+        className={`flex items-start justify-between gap-3 rounded-xl border p-4 text-left transition ${tierColor} ${
           isSelected
             ? "bg-cyan-500/10"
             : "bg-black/20 opacity-80 hover:bg-white/5"
         }`}
       >
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2">
           {isSelected ? (
-            <CheckCircle2 className="text-cyan-400" size={18} />
+            <CheckCircle2 className="mt-0.5 shrink-0 text-cyan-400" size={18} />
           ) : (
-            <AlertCircle className="text-zinc-500" size={18} />
+            <AlertCircle className="mt-0.5 shrink-0 text-zinc-500" size={18} />
           )}
-          <span>{agent.name}</span>
+          <span>
+            <span className="block font-medium">{agent.name}</span>
+            <span className="mt-0.5 block text-xs text-zinc-400">{agent.description}</span>
+          </span>
         </div>
 
-        <span className="text-xs text-zinc-400">${agent.cost}</span>
+        <span className="shrink-0 text-xs text-zinc-400">${agent.cost}</span>
       </button>
     );
   }
@@ -259,12 +271,19 @@ export default function NewReportPage() {
             onChange={(e) => update("industry", e.target.value)}
             className={inputClass}
           >
-            <option value="technology">Technology</option>
+              <option value="technology">Technology</option>
+              <option value="realstate">Realstate</option>
             <option value="finance">Finance</option>
             <option value="healthcare">Healthcare</option>
             <option value="education">Education</option>
-            <option value="retail">Retail</option>
-          </select>
+              <option value="retail">Retail</option>
+            <option value="hospitality">Hospitality</option>
+            <option value="manufacturing">Manufacturing</option>
+              <option value="transportation">Transportation</option>
+              <option value="energy">Energy</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="other">Other</option>
+              </select>
           </div>
 
           <div>
@@ -454,9 +473,18 @@ export default function NewReportPage() {
       </div>
 
       <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-6">
-        <h2 className="text-xl font-bold">
-          AI Agents that will execute
-        </h2>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h2 className="text-xl font-bold">Specialists that will run</h2>
+          <span className="rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3 py-1 text-xs text-cyan-300">
+            {selectedAgents.length} selected
+          </span>
+        </div>
+        <p className="mt-2 text-sm text-zinc-400">
+          Pick which AI specialists analyze this business. Data collection
+          (website crawl, Google Business, social) runs automatically for the
+          specialists you choose, and the Report Builder always assembles the
+          final report.
+        </p>
 
         <div className="mt-6 flex flex-col gap-6">
 
@@ -488,7 +516,7 @@ export default function NewReportPage() {
 
         <button
           onClick={generateReport}
-          disabled={loading}
+          disabled={loading || selectedAgents.length === 0}
           className="inline-flex items-center gap-2 rounded-xl bg-cyan-500 px-5 py-3 text-sm font-semibold text-black transition hover:bg-cyan-400 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {loading ? (

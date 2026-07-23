@@ -3,7 +3,7 @@ import {
   type CalendarDay,
   WEEK_DAYS,
   calendarPlatformAccent,
-} from "@/lib/marketing/marketing-page-config";
+} from "@/lib/ai/tools/marketing/marketing-page-config";
 
 type CalendarSectionProps = {
   calendarBoard: CalendarBoard;

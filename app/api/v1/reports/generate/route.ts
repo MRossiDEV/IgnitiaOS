@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { after } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase/server";
+import { runAdminReportPipeline } from "@/lib/ai/runAdminReportPipeline";
+import { VALID_SPECIALIST_IDS } from "@/lib/ai/pipeline/custom-report";
 
 function slugify(text: string) {
   return text
@@ -51,21 +54,6 @@ function parseTags(tags: unknown) {
   return [] as string[];
 }
 
-const AGENT_ENDPOINTS: Record<string, string> = {
-  "Website Crawler": "/api/v1/agents/website-crawler",
-  "Google Business": "/api/v1/agents/google-business-auditor",
-  "Social Media": "/api/v1/agents/social-media-auditor",
-  Branding: "/api/v1/agents/branding-auditor",
-  "Report Builder": "/api/v1/agents/report-builder",
-  "SEO Auditor": "/api/v1/agents/seo-auditor",
-  Conversion: "/api/v1/agents/conversion-auditor",
-  "Lead Generation": "/api/v1/agents/lead-generation-auditor",
-  "Growth Strategist": "/api/v1/agents/growth-strategyst",
-  "Website Auditor": "/api/v1/agents/website-auditor",
-  "AI Opportunities": "/api/v1/agents/ai-opportunity-auditor",
-  "Proposal Generator": "/api/v1/agents/proposal-generator",
-};
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -92,7 +80,6 @@ export async function POST(req: NextRequest) {
     const address = getOptionalString(body.address);
 
     const reportCode = getOptionalString(body.report_code, body.reportCode);
-    const status = getFirstNonEmptyString(body.status, "draft");
     const version = parseVersion(body.version);
 
     const auditDate = parseDateOrNull(body.audit_date);
@@ -111,19 +98,34 @@ export async function POST(req: NextRequest) {
 
     const notes = getOptionalString(body.notes);
 
+    // Only keep specialist ids the pipeline actually knows about.
     const selectedAgents: string[] = Array.isArray(body.agents)
-      ? body.agents.filter((agent: unknown): agent is string => typeof agent === "string")
+      ? body.agents.filter(
+          (agent: unknown): agent is string =>
+            typeof agent === "string" && VALID_SPECIALIST_IDS.has(agent)
+        )
       : [];
 
-    if (!businessName)
+    if (!businessName) {
       return NextResponse.json(
-        {
-          error: "Business name required",
-        },
-        {
-          status: 400,
-        }
+        { error: "Business name required" },
+        { status: 400 }
       );
+    }
+
+    if (selectedAgents.length === 0) {
+      return NextResponse.json(
+        { error: "Select at least one specialist to run." },
+        { status: 400 }
+      );
+    }
+
+    if (!businessWebsite) {
+      return NextResponse.json(
+        { error: "A business website is required to run the analysis." },
+        { status: 400 }
+      );
+    }
 
     const slugBase = getFirstNonEmptyString(
       body.slug,
@@ -159,7 +161,8 @@ export async function POST(req: NextRequest) {
         report_code: generatedReportCode,
         slug,
         report_slug: slug,
-        status,
+        // The pipeline flips this to processing -> completed | failed.
+        status: "queued",
         version,
 
         client_id: getOptionalString(body.client_id, body.clientId),
@@ -197,41 +200,15 @@ export async function POST(req: NextRequest) {
           notes,
           selectedAgents,
         },
-
       })
       .select()
       .single();
 
     if (error) throw error;
 
-    const defaultAgents = Object.values(AGENT_ENDPOINTS);
-    const selectedAgentEndpoints =
-      selectedAgents.length > 0
-        ? selectedAgents
-            .map((agentName) => AGENT_ENDPOINTS[agentName])
-            .filter((endpoint): endpoint is string => Boolean(endpoint))
-        : defaultAgents;
-
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || req.nextUrl.origin;
-
-    // Fire-and-forget
-    (async () => {
-      for (const endpoint of selectedAgentEndpoints) {
-        try {
-          await fetch(`${appUrl}${endpoint}`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              reportId: report.id,
-            }),
-          });
-        } catch (e) {
-          console.error(endpoint, e);
-        }
-      }
-    })();
+    // Fire-and-forget: runs after the response is sent. The report view
+    // polls status until it flips to completed | failed.
+    after(() => runAdminReportPipeline(report.id));
 
     return NextResponse.json({
       success: true,

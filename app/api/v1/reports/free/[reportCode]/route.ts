@@ -1,200 +1,40 @@
+// ======================================================
+// GET /api/v1/reports/free/[reportCode]
+// ======================================================
+// Polling endpoint for the frontend while a report is
+// generating. Requires the access_code as a query param
+// since this is a public, unauthenticated route — without
+// it, anyone could enumerate report_codes and read other
+// people's business data.
+//
+// Usage: GET /api/v1/reports/free/IGN-AB3XQ9?code=Z8K2P1QW4M
+//
+// NOTE: adjust the response shape below to match whatever
+// app/report/v1/free/[reportCode]/page.tsx already expects
+// if that page pre-dates this route.
+
 import { NextRequest, NextResponse } from "next/server";
-import { supabaseAdmin } from "@/lib/supabase/server";
+import { ReportService } from "@/lib/services/ReportService";
 
 export async function GET(
   request: NextRequest,
-  {
-    params,
-  }: {
-    params: {
-      reportCode: string;
-    };
-  }
+  { params }: { params: Promise<{ reportCode: string }> }
 ) {
-  try {
-    const supabase = supabaseAdmin;
+  const { reportCode } = await params;
+  const accessCode = request.nextUrl.searchParams.get("code");
 
-    const { reportCode } = params;
+  const report = await ReportService.getByReportCode(reportCode);
 
-    if (!reportCode) {
-      return NextResponse.json(
-        {
-          error: "Report code is required",
-        },
-        {
-          status: 400,
-        }
-      );
-    }
-
-
-    const { data: report, error } = await supabase
-      .from("reports")
-      .select(`
-        id,
-        report_code,
-        slug,
-        status,
-
-        business_name,
-        business_website,
-        industry,
-        business_size,
-        city,
-        state,
-        country,
-
-        audit_date,
-        created_at,
-
-        ai_summary,
-        executive_summary,
-
-        strengths,
-        weaknesses,
-        opportunities,
-        threats,
-
-        overall_score,
-
-        website_score,
-        seo_score,
-        google_score,
-        social_score,
-        branding_score,
-
-        quick_wins,
-
-        thumbnail_url
-      `)
-      .eq("report_code", reportCode)
-      .single();
-
-
-
-    if (error || !report) {
-
-      console.error(
-        "REPORT FETCH ERROR:",
-        error
-      );
-
-      return NextResponse.json(
-        {
-          error: "Report not found",
-        },
-        {
-          status: 404,
-        }
-      );
-    }
-
-
-
-    return NextResponse.json(
-      {
-        success: true,
-
-        report: {
-
-          id: report.report_code,
-
-          status: report.status,
-
-
-          business: {
-
-            name: report.business_name,
-
-            website: report.business_website,
-
-            industry: report.industry,
-
-            size: report.business_size,
-
-            location: [
-              report.city,
-              report.state,
-              report.country,
-            ]
-              .filter(Boolean)
-              .join(", "),
-          },
-
-
-          summary: {
-
-            ai: report.ai_summary,
-
-            executive: report.executive_summary,
-
-          },
-
-
-          scores: {
-
-            overall: report.overall_score,
-
-            website: report.website_score,
-
-            seo: report.seo_score,
-
-            google: report.google_score,
-
-            social: report.social_score,
-
-            branding: report.branding_score,
-
-          },
-
-
-          insights: {
-
-            strengths: report.strengths,
-
-            weaknesses: report.weaknesses,
-
-            opportunities: report.opportunities,
-
-            threats: report.threats,
-
-          },
-
-
-          quickWins: report.quick_wins,
-
-
-          thumbnail: report.thumbnail_url,
-
-
-          createdAt: report.created_at,
-
-        },
-
-      },
-      {
-        status: 200,
-      }
-    );
-
-
-  } catch (error) {
-
-
-    console.error(
-      "FREE REPORT API ERROR:",
-      error
-    );
-
-
-    return NextResponse.json(
-      {
-        error: "Internal server error",
-      },
-      {
-        status: 500,
-      }
-    );
-
+  if (!report) {
+    return NextResponse.json({ error: "Report not found" }, { status: 404 });
   }
+
+  if (!accessCode || accessCode !== report.access_code) {
+    return NextResponse.json(
+      { error: "Invalid or missing access code" },
+      { status: 403 }
+    );
+  }
+
+  return NextResponse.json({ report });
 }

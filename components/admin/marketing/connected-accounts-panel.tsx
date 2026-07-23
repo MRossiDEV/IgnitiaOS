@@ -7,7 +7,7 @@ import {
   platformCardMeta,
   type EditableAccountDraft,
   type SocialAccount,
-} from "@/lib/marketing/marketing-page-config";
+} from "@/lib/ai/tools/marketing/marketing-page-config";
 
 type ConnectedAccountsPanelProps = {
   socialAccounts: SocialAccount[];

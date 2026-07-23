@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { approveInstagramDraft, publishInstagramDraft } from "@/lib/social/instagram-publishing"
+import { approveInstagramDraft, publishInstagramDraft } from "@/lib/ai/tools/social/instagram-publishing"
 
 interface RouteContext {
   params: {

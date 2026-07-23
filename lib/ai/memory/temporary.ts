@@ -1,4 +1,4 @@
-import { PipelineResults } from "../engine/schemas";
+import { PipelineResults } from "../core/schemas";
 
 export interface WebsiteMemory {
   url?: string;

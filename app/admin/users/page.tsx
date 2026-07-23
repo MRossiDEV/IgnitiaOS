@@ -57,7 +57,7 @@ import type {
   User,
   CreateUserInput,
   UpdateUserInput,
-} from "@/lib/models/user";
+} from "@/lib/ai/models/user";
 
 const ROLE_COLORS: Record<string, string> = {
   super_admin:

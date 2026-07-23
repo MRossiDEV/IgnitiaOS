@@ -5,7 +5,7 @@ import {
   initialCalendarBoard,
   type CalendarBoard,
   type CalendarDay,
-} from "@/lib/marketing/marketing-page-config";
+} from "@/lib/ai/tools/marketing/marketing-page-config";
 
 export function useCalendarBoard() {
   const [calendarBoard, setCalendarBoard] =

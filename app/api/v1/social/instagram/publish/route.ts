@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { postInstagram } from "@/lib/social/instagram-publishing"
+import { postInstagram } from "@/lib/ai/tools/social/instagram-publishing"
 
 const PublishNowSchema = z.object({
   organizationId: z.string().uuid().optional().nullable(),

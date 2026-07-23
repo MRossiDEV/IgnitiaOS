@@ -4,7 +4,7 @@
  */
 
 import { supabaseAdmin } from './server'
-import { Workflow, WorkflowStatus, WorkflowType, getDefaultSteps } from '@/lib/models/workflow'
+import { Workflow, WorkflowStatus, WorkflowType, getDefaultSteps } from '@/lib/ai/models/workflow'
 
 /**
  * Create a new workflow for an order

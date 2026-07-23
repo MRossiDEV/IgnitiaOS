@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server"
-import { publishInstagramDraft } from "@/lib/social/instagram-publishing"
+import { publishInstagramDraft } from "@/lib/ai/tools/social/instagram-publishing"
 
 interface RouteContext {
   params: {

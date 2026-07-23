@@ -5,7 +5,7 @@ import { PublisherDraftsTable } from "@/components/admin/marketing/publisher-dra
 import { MarketingAgentsSection } from "@/components/admin/marketing/marketing-agents-section";
 import type { usePublisher } from "@/app/admin/marketing/hooks/use-publisher";
 import type { useMarketingAgents } from "@/app/admin/marketing/hooks/use-marketing-agents";
-import type { SocialAccount } from "@/lib/marketing/marketing-page-config";
+import type { SocialAccount } from "@/lib/ai/tools/marketing/marketing-page-config";
 
 type PublisherSectionProps = {
   publisher: ReturnType<typeof usePublisher>;

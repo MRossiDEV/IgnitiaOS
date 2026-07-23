@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server"
 import { supabaseAdmin } from "@/lib/supabase/server"
 import { z } from "zod"
+import { CrmEventService } from "@/lib/services/CrmEventService"
 // import { sendLeadConfirmationEmail, sendInternalLeadNotification } from "@/lib/email/service"
 
 // Validation schema for lead creation
@@ -165,6 +166,20 @@ export async function POST(req: NextRequest) {
     //   source: data.source,
     //   company: data.company,
     // })
+
+    // Fire any workflows connected to "lead.created" (e.g. auto-email) —
+    // fire-and-forget, must never block/fail the lead creation response.
+    CrmEventService.trigger("lead.created", {
+      id: lead.id,
+      name: data.name,
+      email: data.email,
+      company: data.company,
+      website: data.website,
+      industry: data.industry,
+      primaryGoal: data.primaryGoal,
+      source: data.source,
+      createdAt: lead.created_at,
+    }).catch((err) => console.error("CrmEventService.trigger(lead.created) failed:", err))
 
     console.log("Lead created successfully:", {
       id: lead.id,

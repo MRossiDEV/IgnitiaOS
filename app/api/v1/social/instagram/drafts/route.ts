@@ -4,7 +4,7 @@ import {
   createInstagramDraft,
   generateInstagramContent,
   listInstagramDrafts,
-} from "@/lib/social/instagram-publishing"
+} from "@/lib/ai/tools/social/instagram-publishing"
 
 const ModeSchema = z.enum(["manual_approval", "auto_publish"])
 

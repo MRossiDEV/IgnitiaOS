@@ -6,7 +6,7 @@ import {
   toMarketingAgentCard,
   type DbMarketingAgent,
   type MarketingAgentCard,
-} from "@/lib/marketing/marketing-page-config";
+} from "@/lib/ai/tools/marketing/marketing-page-config";
 
 export function useMarketingAgents() {
   const [loadingAgents, setLoadingAgents] = useState(true);

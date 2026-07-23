@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   type MarketingAgentCard,
   withAlpha,
-} from "@/lib/marketing/marketing-page-config";
+} from "@/lib/ai/tools/marketing/marketing-page-config";
 
 type MarketingAgentsSectionProps = {
   loadingAgents: boolean;

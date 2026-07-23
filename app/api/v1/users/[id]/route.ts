@@ -9,7 +9,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase/server'
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import type { UpdateUserInput } from '@/lib/models/user'
+import type { UpdateUserInput } from '@/lib/ai/models/user'
 
 type Params = Promise<{ id: string }>
 

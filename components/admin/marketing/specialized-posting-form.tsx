@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { ImagePlus, Loader2, UploadCloud, Video } from "lucide-react";
-import type { InstagramConnectionSummary } from "@/lib/marketing/marketing-page-config";
+import type { InstagramConnectionSummary } from "@/lib/ai/tools/marketing/marketing-page-config";
 
 type PublisherActionValue =
   | "publish_now"

@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import AIChatDrawer from "@/components/admin/ai/AIChatDrawer";
 import ClubDrawer from "@/components/admin/club/ClubDrawer";
 import { NavItem } from "@/components/ui/nav-item";
+import { NavGroup } from "@/components/admin/nav-group";
+import { CreditBalancePill } from "@/components/admin/credit-balance";
 import BackgroundFX from "@/app/admin/agents/[id]/components/background-fx";
 import {
   ChevronLeft,
@@ -20,7 +22,6 @@ import {
   Settings,
   Search,
   Bell,
-  CreditCard,
   Rocket,
   Target,
   Layers,
@@ -28,8 +29,11 @@ import {
   FileText,
   BottleWine,
   Link,
-  Speakerphone,
-  Megaphone,  
+  Bot,
+  Megaphone,
+  LetterText,
+  Mail,
+  MapPin,
 } from "lucide-react";
 import { Toaster } from "sonner";
 
@@ -173,6 +177,16 @@ export default function AdminLayout({
             AI Agents
           </NavItem>
 
+          <NavItem collapsed={sidebarCollapsed} href="/admin/automation" icon={<Bot size={18} />}>
+            Automation
+          </NavItem>
+
+          <NavGroup collapsed={sidebarCollapsed} icon={<MapPin size={18} />} label="Intelligence">
+            <NavItem collapsed={sidebarCollapsed} href="/admin/intelligence/properties" icon={<MapPin size={16} />}>
+              Property Intelligence
+            </NavItem>
+          </NavGroup>
+
           {/* <NavItem collapsed={sidebarCollapsed} href="/admin/analytics" icon={<LineChart size={18} />}>
             Revenue Analytics
           </NavItem> */}
@@ -187,6 +201,10 @@ export default function AdminLayout({
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/marketing" icon={<Megaphone size={18} />}>
             Marketing
+          </NavItem>
+
+          <NavItem collapsed={sidebarCollapsed} href="/admin/emails" icon={<Mail size={18} />}>
+            Emails
           </NavItem>
 
           <NavItem collapsed={sidebarCollapsed} href="/admin/settings" icon={<Settings size={18} />}>
@@ -235,10 +253,7 @@ export default function AdminLayout({
                 <Bell size={20} />
               </button>
 
-              <div className="hidden md:flex items-center gap-2 rounded-xl bg-cyan-500/10 border border-cyan-500/20 px-3 py-2">
-                <CreditCard size={16} />
-                <span className="text-sm">Credits: 12,450</span>
-              </div>
+              <CreditBalancePill />
 
               {/* AI BUTTON */}
               <button

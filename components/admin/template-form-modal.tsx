@@ -28,8 +28,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { AlertCircle, Loader2 } from 'lucide-react'
-import type { Template, CreateTemplateInput, UpdateTemplateInput, TemplateType, OutputFormat } from '@/lib/models/template'
-import { TEMPLATE_TYPE_LABELS, TEMPLATE_TYPE_DESCRIPTIONS, OUTPUT_FORMAT_LABELS, AI_MODELS } from '@/lib/models/template'
+import type { Template, CreateTemplateInput, UpdateTemplateInput, TemplateType, OutputFormat } from '@/lib/ai/models/template'
+import { TEMPLATE_TYPE_LABELS, TEMPLATE_TYPE_DESCRIPTIONS, OUTPUT_FORMAT_LABELS, AI_MODELS } from '@/lib/ai/models/template'
 
 interface TemplateFormModalProps {
   open: boolean

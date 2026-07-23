@@ -17,7 +17,18 @@ type ReportRow = {
   status?: string;
   created_at?: string;
   audit_date?: string;
+  metadata?: {
+    usage?: {
+      totalTokens?: number;
+      cost?: number;
+    };
+  };
 };
+
+function formatCost(cost: number): string {
+  if (cost > 0 && cost < 0.01) return "<$0.01";
+  return `$${cost.toFixed(cost < 1 ? 4 : 2)}`;
+}
 
 const statusStyles: Record<string, string> = {
   ready: "border-emerald-500/20 bg-emerald-500/10 text-emerald-300",
@@ -64,6 +75,16 @@ export default function ReportsPage() {
       reports.length
     : 0;
 
+  const totalAiCost = reports.reduce(
+    (acc, report) => acc + Number(report.metadata?.usage?.cost ?? 0),
+    0
+  );
+
+  const totalTokens = reports.reduce(
+    (acc, report) => acc + Number(report.metadata?.usage?.totalTokens ?? 0),
+    0
+  );
+
   const filteredReports = useMemo(() => {
     return reports.filter((report) => {
       const normalizedQuery = query.toLowerCase();
@@ -98,9 +119,14 @@ export default function ReportsPage() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KpiCard title="Total Reports" value={reports.length.toString()} />
         <KpiCard title="Avg. Score" value={averageScore ? averageScore.toFixed(1) : "0.0"} />
+        <KpiCard
+          title="Est. AI Cost"
+          value={formatCost(totalAiCost)}
+          subtitle={`${totalTokens.toLocaleString()} tokens`}
+        />
         <KpiCard title="Est. Monthly Revenue" value={`$${totalRevenue.toLocaleString()}`} />
       </div>
 
@@ -155,18 +181,20 @@ export default function ReportsPage() {
                 <th className="px-4 py-3 text-left font-medium">Business</th>
                 <th className="px-4 py-3 text-left font-medium">Code</th>
                 <th className="px-4 py-3 text-left font-medium">Score</th>
+                <th className="px-4 py-3 text-left font-medium">AI Cost</th>
                 <th className="px-4 py-3 text-left font-medium">Revenue</th>
                 <th className="px-4 py-3 text-left font-medium">Status</th>
                 <th className="px-4 py-3 text-left font-medium">Generated</th>
               </tr>
             </thead>
             <tbody>
-              {filteredReports.map((report) => {
+              {filteredReports.map((report, index) => {
                 const reportHref = `/admin/reports/${report.report_slug}`;
                 const status = (report.status || "ready").toLowerCase();
+                const rowKey = report.id ?? report.report_slug ?? report.report_code ?? `report-${index}`;
 
                 return (
-                  <tr key={report.report_slug} className="border-b border-white/5 hover:bg-white/5">
+                  <tr key={rowKey} className="border-b border-white/5 hover:bg-white/5">
                     <td className="px-4 py-3">
                       <Link href={reportHref} className="group inline-flex items-center gap-2 font-medium hover:text-cyan-300">
                         {report.business_name || "Untitled report"}
@@ -177,6 +205,11 @@ export default function ReportsPage() {
                     <td className="px-4 py-3 text-zinc-300">{report.report_slug || "-"}</td>
                     <td className="px-4 py-3 font-semibold text-cyan-300">
                       {report.overall_score ?? report.score ?? "-"}
+                    </td>
+                    <td className="px-4 py-3 text-amber-300">
+                      {report.metadata?.usage?.cost
+                        ? formatCost(Number(report.metadata.usage.cost))
+                        : "-"}
                     </td>
                     <td className="px-4 py-3 text-zinc-300">
                       ${Number(report.estimated_monthly_revenue ?? report.estimatedImpact ?? 0).toLocaleString()}
@@ -206,11 +239,20 @@ export default function ReportsPage() {
   );
 }
 
-function KpiCard({ title, value }: { title: string; value: string }) {
+function KpiCard({
+  title,
+  value,
+  subtitle,
+}: {
+  title: string;
+  value: string;
+  subtitle?: string;
+}) {
   return (
     <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
       <p className="text-xs text-zinc-500">{title}</p>
       <p className="mt-2 text-2xl font-bold">{value}</p>
+      {subtitle && <p className="mt-1 text-xs text-zinc-500">{subtitle}</p>}
     </div>
   );
 }

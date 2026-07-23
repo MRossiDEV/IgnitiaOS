@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { z } from "zod"
-import { publishDueInstagramDrafts } from "@/lib/social/instagram-publishing"
+import { publishDueInstagramDrafts } from "@/lib/ai/tools/social/instagram-publishing"
 
 const SchedulerInputSchema = z.object({
   limit: z.number().int().min(1).max(100).optional(),
